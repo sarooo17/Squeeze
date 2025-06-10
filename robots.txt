@@ -1,0 +1,4 @@
+// filepath: robots.txt
+User-agent: *
+Allow: /
+Sitemap: https://www.iltuodominio.com/sitemap.xml
