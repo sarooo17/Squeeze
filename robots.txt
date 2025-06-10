@@ -1,4 +1,4 @@
 // filepath: robots.txt
 User-agent: *
 Allow: /
-Sitemap: https://www.iltuodominio.com/sitemap.xml
+Sitemap: https://www.squeeze-it.com/sitemap.xml
