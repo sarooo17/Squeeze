@@ -1,19 +1,9 @@
-// filepath: sitemap.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.squeeze-it.com/</loc>
-    <lastmod>2025-06-10</lastmod> <!-- Aggiorna con la data dell'ultima modifica -->
-    <changefreq>monthly</changefreq>
+    <lastmod>2025-06-10</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <!-- Se hai altre pagine (es. privacy policy), aggiungile qui -->
-  <!--
-  <url>
-    <loc>https://www.squeeze-it.com/privacy.html</loc>
-    <lastmod>2025-06-10</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  -->
 </urlset>
