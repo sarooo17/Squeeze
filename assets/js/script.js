@@ -1,319 +1,157 @@
-// DOM Elements
-const hamburger = document.querySelector('.hamburger');
-const navMenu = document.querySelector('.nav-menu');
-const header = document.querySelector('.header');
-const typingDemo = document.getElementById('typingDemo');
-const timeSlots = document.getElementById('timeSlots');
-const restartDemo = document.getElementById('restartDemo');
-const waitlistForm = document.getElementById('waitlistForm');
-const successMessage = document.getElementById('successMessage');
-const faqItems = document.querySelectorAll('.faq-item');
+document.addEventListener("DOMContentLoaded", () => {
+  const socket = io('https://IL_TUO_URL_BACKEND_DEPLOYATO'); // MODIFICA QUI
 
-// Mobile menu toggle
-hamburger?.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-});
+  const dynamicSlogan = document.getElementById("dynamic-slogan");
+  const counterElement = document.getElementById("counter");
+  
+  // Riferimenti agli step del form
+  const formFlowContainer = document.getElementById("form-flow-container");
+  const inputStep = document.getElementById("input-step");
+  const feedbackStep = document.getElementById("feedback-step");
+  const emailStep = document.getElementById("email-step");
+  const thankyouStep = document.getElementById("thankyou-step");
 
-// Header scroll effect
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
-        header.style.background = 'rgba(255, 255, 255, 0.98)';
-        header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-    } else {
-        header.style.background = 'rgba(255, 255, 255, 0.95)';
-        header.style.boxShadow = 'none';
+  // Riferimenti agli elementi interni
+  const userForm = document.getElementById("user-form");
+  const userInputElement = document.getElementById("user-input");
+  const feedbackMessageElement = document.getElementById("feedback-message");
+
+  const emailForm = document.getElementById("email-form");
+  const emailInputElement = document.getElementById("email-input");
+  
+  const dynamicThankYouMessageElement = document.getElementById("dynamic-thank-you-message");
+
+  const slogans = [
+    'The calendar that knows you. And lets you <span class="highlight">breathe</span>.',
+    'An extra mind to organize <span class="highlight">yours</span>.',
+    'Every hour in its <span class="highlight">right</span> place.',
+    'Organized without <span class="highlight">anxiety</span>.',
+  ];
+
+  const feedbackMessages = [
+    "Great idea! We're on it 💪", "Thanks for the input! We're working hard 🚀", "Awesome suggestion! Let's build it ✨",
+    "Noted! We're making Squeeze better for you 👍", "Love it! We're cooking something special 🧑‍🍳"
+  ];
+
+  const thankYouMessages = [
+    "Thank you! We'll notify you at launch 🚀", "You're all set! We'll be in touch soon ✨", "Thanks for joining! Get ready for Squeeze 👍",
+    "Awesome! We'll send you an update when we launch 📧", "Got it! We'll let you know when Squeeze is live 🎉"
+  ];
+
+  let currentSloganIndex = 0;
+  let initialAnimationDone = false; 
+  let userSuggestion = ""; 
+
+  function getRandomMessage(messagesArray) {
+    return messagesArray[Math.floor(Math.random() * messagesArray.length)];
+  }
+
+  function rotateSlogans() {
+    dynamicSlogan.style.opacity = 0;
+    setTimeout(() => {
+      currentSloganIndex = (currentSloganIndex + 1) % slogans.length;
+      dynamicSlogan.innerHTML = slogans[currentSloganIndex];
+      dynamicSlogan.style.opacity = 1;
+    }, 500);
+  }
+  setInterval(rotateSlogans, 5000);
+
+  function animateCounterTo(targetCount) {
+    let currentAnimatedValue = 0;
+    counterElement.textContent = currentAnimatedValue; 
+    const animationDuration = 1500; 
+    let startTime = null;
+
+    function animationStep(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const increment = Math.max(1, Math.floor((progress / animationDuration) * targetCount));
+      const value = Math.min(targetCount, increment);
+
+      if (currentAnimatedValue < value) {
+        currentAnimatedValue = value;
+        counterElement.textContent = currentAnimatedValue;
+      } else if (currentAnimatedValue > targetCount) { 
+        currentAnimatedValue = targetCount;
+        counterElement.textContent = currentAnimatedValue;
+      }
+
+      if (currentAnimatedValue < targetCount) {
+        requestAnimationFrame(animationStep);
+      } else {
+        counterElement.textContent = targetCount; 
+        initialAnimationDone = true; 
+      }
     }
-});
+    requestAnimationFrame(animationStep);
+  }
 
-// Demo typing animation
-const demoTexts = [
-    "Domani mattina vorrei andare a correre",
-    "Devo comprare un regalo per mamma",
-    "Vorrei iniziare a leggere un libro ogni sera",
-    "Ho un appuntamento dal dentista giovedì"
-];
-
-const demoSlots = [
-    [
-        { text: "🏃‍♂️ Corsa al parco • 07:00-07:45", delay: 0 },
-        { text: "🚿 Doccia • 08:00-08:15", delay: 200 },
-        { text: "☕ Colazione • 08:30-09:00", delay: 400 }
-    ],
-    [
-        { text: "🛍️ Shopping centro • 15:00-16:30", delay: 0 },
-        { text: "🎁 Negozio regali • 16:45-17:30", delay: 200 },
-        { text: "🚗 Ritorno a casa • 17:30-18:00", delay: 400 }
-    ],
-    [
-        { text: "📚 Lettura • 21:00-21:30", delay: 0 },
-        { text: "🛏️ Preparazione notte • 21:30-22:00", delay: 200 },
-        { text: "😴 Sonno • 22:00", delay: 400 }
-    ],
-    [
-        { text: "🦷 Dentista • 14:30-15:30", delay: 0 },
-        { text: "🚗 Viaggio ritorno • 15:30-16:00", delay: 200 },
-        { text: "☕ Pausa relax • 16:15-16:45", delay: 400 }
-    ]
-];
-
-let currentDemoIndex = 0;
-let typingTimeout;
-let slotsTimeout = [];
-
-function typeText(text, element, callback) {
-    element.textContent = '';
-    let i = 0;
-    
-    function type() {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            typingTimeout = setTimeout(type, 50);
-        } else if (callback) {
-            setTimeout(callback, 500);
-        }
+  // Funzione per cambiare lo step attivo
+  function setActiveStep(activeStepElement) {
+    // Nasconde tutti gli step
+    [inputStep, feedbackStep, emailStep, thankyouStep].forEach(step => {
+      step.classList.remove("active-step");
+    });
+    // Mostra lo step desiderato
+    if (activeStepElement) {
+      activeStepElement.classList.add("active-step");
     }
-    
-    type();
-}
+  }
 
-function showSlots(slots) {
-    timeSlots.innerHTML = '';
-    
-    slots.forEach((slot, index) => {
-        slotsTimeout.push(setTimeout(() => {
-            const slotElement = document.createElement('div');
-            slotElement.className = 'calendar-slot';
-            slotElement.textContent = slot.text;
-            slotElement.style.opacity = '0';
-            slotElement.style.transform = 'translateY(20px)';
-            timeSlots.appendChild(slotElement);
-            
-            // Animate in
-            setTimeout(() => {
-                slotElement.style.transition = 'all 0.5s ease';
-                slotElement.style.opacity = '1';
-                slotElement.style.transform = 'translateY(0)';
-            }, 50);
-        }, slot.delay));
-    });
-}
-
-function runDemo() {
-    const currentText = demoTexts[currentDemoIndex];
-    const currentSlots = demoSlots[currentDemoIndex];
-    
-    typeText(currentText, typingDemo, () => {
-        showSlots(currentSlots);
-        
-        // Next demo after 3 seconds
-        setTimeout(() => {
-            currentDemoIndex = (currentDemoIndex + 1) % demoTexts.length;
-            runDemo();
-        }, 3000);
-    });
-}
-
-// Start demo when page loads
-window.addEventListener('load', () => {
-    setTimeout(runDemo, 1000);
-});
-
-// Restart demo button
-restartDemo?.addEventListener('click', () => {
-    // Clear existing timeouts
-    clearTimeout(typingTimeout);
-    slotsTimeout.forEach(timeout => clearTimeout(timeout));
-    slotsTimeout = [];
-    
-    currentDemoIndex = 0;
-    runDemo();
-});
-
-// Button interactions
-document.getElementById('previewBtn')?.addEventListener('click', () => {
-    alert('Anteprima in arrivo! Unisciti alla lista d\'attesa per essere tra i primi a provarla.');
-});
-
-document.getElementById('waitlistBtn')?.addEventListener('click', () => {
-    document.querySelector('.final-cta').scrollIntoView({ behavior: 'smooth' });
-});
-
-document.getElementById('headerCTA')?.addEventListener('click', () => {
-    document.querySelector('.final-cta').scrollIntoView({ behavior: 'smooth' });
-});
-
-// Waitlist form
-waitlistForm?.addEventListener('submit', (e) => {
+  userForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    
-    const email = document.getElementById('emailInput').value;
-    const friendReferral = document.getElementById('friendReferral').checked;
-    
-    // Simulate form submission
-    const submitButton = waitlistForm.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
-    
-    submitButton.textContent = 'Invio in corso...';
-    submitButton.disabled = true;
-    
-    setTimeout(() => {
-        waitlistForm.style.display = 'none';
-        successMessage.classList.add('show');
-        
-        // Store in localStorage (in a real app, send to server)
-        localStorage.setItem('squeeze_waitlist', JSON.stringify({
-            email,
-            friendReferral,
-            timestamp: new Date().toISOString()
-        }));
-        
-        console.log('Waitlist signup:', { email, friendReferral });
-    }, 2000);
-});
+    userSuggestion = userInputElement.value; 
+    if (userSuggestion.trim() !== "") {
+      setActiveStep(null); // Nasconde lo step corrente (input-form)
+      
+      setTimeout(() => { // Permette alla transizione di uscita di completarsi
+        feedbackMessageElement.textContent = getRandomMessage(feedbackMessages);
+        setActiveStep(feedbackStep); // Mostra lo step del feedback
+      }, 400); // Durata della transizione CSS (opacity)
 
-// FAQ interactions
-faqItems.forEach(item => {
-    const question = item.querySelector('.faq-question');
-    
-    question.addEventListener('click', () => {
-        const isActive = item.classList.contains('active');
-        
-        // Close all other FAQ items
-        faqItems.forEach(otherItem => {
-            if (otherItem !== item) {
-                otherItem.classList.remove('active');
-            }
-        });
-        
-        // Toggle current item
-        item.classList.toggle('active', !isActive);
-    });
-});
-
-// Intersection Observer for animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('fade-in-up');
-        }
-    });
-}, observerOptions);
-
-// Observe elements for animation
-document.querySelectorAll('.feature-card, .step-card, .problem-point, .solution-step').forEach(el => {
-    observer.observe(el);
-});
-
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Feature card hover effects
-document.querySelectorAll('.feature-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-8px) scale(1.02)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0) scale(1)';
-    });
-});
-
-// Step card hover effects
-document.querySelectorAll('.step-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-5px)';
-        this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-        this.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-    });
-});
-
-// Console welcome message
-console.log('%c🗜️ Benvenuto in Squeeze Calendar!', 'color: #3B82F6; font-size: 18px; font-weight: bold;');
-console.log('%cStiamo rivoluzionando il modo di gestire il tempo con l\'AI', 'color: #F59E0B; font-size: 14px;');
-console.log('%cVuoi unirti al team? Scrivici!', 'color: #10B981; font-size: 14px;');
-
-// Add loading animation
-window.addEventListener('load', () => {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-    
-    setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
-});
-
-// Email validation
-function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-}
-
-// Add some Easter eggs
-let clickCount = 0;
-document.querySelector('.logo')?.addEventListener('click', () => {
-    clickCount++;
-    if (clickCount === 5) {
-        alert('🎉 Hai scoperto un Easter egg! Sei davvero curioso... perfetto per Squeeze Calendar!');
-        clickCount = 0;
+      setTimeout(() => {
+        setActiveStep(null); // Nasconde lo step del feedback
+        setTimeout(() => { // Permette alla transizione di uscita di completarsi
+            setActiveStep(emailStep); // Mostra lo step dell'email form
+        }, 400);
+      }, 2500 + 400); // Durata del feedback (2.5s) + durata transizione
     }
-});
+  });
 
-// Track user engagement (in a real app, send to analytics)
-const engagementData = {
-    pageViews: 1,
-    timeOnPage: Date.now(),
-    sectionsViewed: new Set(),
-    buttonsClicked: []
-};
+  emailForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const emailInput = emailInputElement.value;
+    if (emailInput.trim() !== "" && userSuggestion.trim() !== "") { 
+      socket.emit('newEmail', { email: emailInput, suggestion: userSuggestion }); 
+      
+      setActiveStep(null); // Nasconde lo step corrente (email-form)
 
-// Track section views
-const sections = document.querySelectorAll('section');
-const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const sectionId = entry.target.id || entry.target.className.split(' ')[0];
-            engagementData.sectionsViewed.add(sectionId);
-        }
-    });
-}, { threshold: 0.5 });
+      setTimeout(() => { // Permette alla transizione di uscita di completarsi
+        dynamicThankYouMessageElement.textContent = getRandomMessage(thankYouMessages);
+        setActiveStep(thankyouStep); // Mostra lo step del thank you
+        // emailInputElement.value = ""; // Opzionale
+      }, 400); // Durata della transizione CSS
+    } else if (emailInput.trim() === "") {
+        alert("Please enter your email."); 
+    } else { 
+        alert("It seems the suggestion was not provided. Please go back and enter your suggestion.");
+    }
+  });
 
-sections.forEach(section => sectionObserver.observe(section));
+  socket.on('updateCounter', (newCount) => {
+    if (!initialAnimationDone) {
+      animateCounterTo(newCount);
+    } else {
+      counterElement.textContent = newCount;
+      counterElement.style.transform = "scale(1.1)";
+      setTimeout(() => {
+        counterElement.style.transform = "scale(1)";
+      }, 300);
+    }
+  });
 
-// Track button clicks
-document.querySelectorAll('button, .btn-primary, .btn-secondary').forEach(button => {
-    button.addEventListener('click', (e) => {
-        engagementData.buttonsClicked.push({
-            button: e.target.textContent.trim(),
-            timestamp: Date.now()
-        });
-    });
-});
-
-// Send engagement data before page unload (in a real app)
-window.addEventListener('beforeunload', () => {
-    engagementData.timeOnPage = Date.now() - engagementData.timeOnPage;
-    console.log('Engagement data:', engagementData);
-    // In a real app: sendAnalytics(engagementData);
+  // Imposta lo step iniziale
+  setActiveStep(inputStep); 
+  counterElement.textContent = 0; 
+  socket.emit('getInitialCounter');
 });

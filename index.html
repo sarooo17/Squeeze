@@ -1,431 +1,78 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squeeze Calendar - Il tuo tempo, riorganizzato con intelligenza</title>
-    <meta name="description" content="Il calendario che ti conosce davvero. Squeeze Calendar ottimizza automaticamente la tua giornata con AI.">
+    <title>Squeeze Calendar - Coming Soon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
-
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav">
-            <div class="nav-brand">
-                <div class="logo">
-                    <span class="logo-icon">🗜️</span>
-                    <span class="logo-text">Squeeze Calendar</span>
-                </div>
-            </div>
-            <div class="nav-menu">
-                <a href="#come-funziona">Come funziona</a>
-                <a href="#features">Caratteristiche</a>
-                <a href="#faq">FAQ</a>
-                <button class="btn-primary-small" id="headerCTA">Unisciti alla lista</button>
-            </div>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
-    </header>
+    <!-- Background blobs -->
+    <div class="blob blob-yellow"></div>
+    <div class="blob blob-orange"></div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    Il tuo tempo, <span class="highlight">riorganizzato</span> con intelligenza.
-                </h1>
-                <p class="hero-subtitle">
-                    Squeeze Calendar ottimizza automaticamente la tua giornata con AI, adattandosi ai tuoi impegni, spostamenti e desideri. È il primo passo verso la tua agenda ideale.
-                </p>
-                <div class="hero-buttons">
-                    <button class="btn-primary" id="previewBtn">
-                        👉 Prova in anteprima
-                    </button>
-                    <button class="btn-secondary" id="waitlistBtn">
-                        👉 Unisciti alla lista d'attesa
-                    </button>
-                </div>
+    <!-- Main content -->
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo">
+            <img src="assets/images/logo.png" alt="Squeeze Calendar Logo">
+        </div>
+
+        <!-- Main content -->
+        <div class="content">
+            <h1>Coming Soon</h1>
+            
+            <!-- Dynamic slogan -->
+            <div class="slogan-container">
+                <p id="dynamic-slogan" class="slogan">The calendar that knows you. And lets you <span class="highlight">breathe</span>.</p>
             </div>
-            <div class="hero-demo">
-                <div class="phone-mockup">
-                    <div class="phone-screen">
-                        <div class="chat-demo">
-                            <div class="chat-message user-message">
-                                "Vorrei iniziare a leggere un libro ogni sera"
-                            </div>
-                            <div class="chat-message ai-message">
-                                <div class="typing-indicator">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
-                            </div>
-                            <div class="calendar-preview">
-                                <div class="calendar-slot">📚 Lettura • 21:00-21:30</div>
-                                <div class="calendar-slot">🏃‍♂️ Corsa • 07:00-07:45</div>
-                                <div class="calendar-slot">☕ Pausa caffè • 15:30-15:45</div>
-                            </div>
-                        </div>
-                    </div>
+            
+            <!-- Counter -->
+            <div class="counter-container">
+                <p class="counter-text"><span id="counter" class="highlight-counter">346</span> people are already waiting for their dream calendar. And you?</p>
+            </div>
+            
+            <!-- UNICO CONTENITORE PER TUTTI GLI STEP DEL FORM -->
+            <div id="form-flow-container" class="form-flow-container">
+                <!-- Step 1: Input form -->
+                <div id="input-step" class="form-step active-step">
+                    <form id="user-form" class="form-with-inline-button">
+                        <input type="text" id="user-input" placeholder="How could a truly smart calendar help you?" required>
+                        <button type="submit" id="submit-btn">I want to try it</button>
+                    </form>
+                </div>
+
+                <!-- Step 2: Feedback message -->
+                <div id="feedback-step" class="form-step">
+                    <p id="feedback-message" class="feedback-message">We're working on it 💪</p>
+                </div>
+                
+                <!-- Step 3: Email form -->
+                <div id="email-step" class="form-step">
+                    <form id="email-form" class="form-with-inline-button">
+                        <input type="email" id="email-input" placeholder="Your email to be notified at launch" required>
+                        <button type="submit" id="email-submit-btn">Notify me</button>
+                    </form>
+                </div>
+                
+                <!-- Step 4: Thank you message -->
+                <div id="thankyou-step" class="form-step">
+                    <p id="dynamic-thank-you-message" class="thank-you-message">Thank you! We'll notify you when we launch.</p>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Problem & Solution -->
-    <section class="problem-solution">
-        <div class="container">
-            <div class="problem">
-                <h2>Ti riconosci in questo?</h2>
-                <div class="problem-points">
-                    <div class="problem-point">
-                        <span class="problem-icon">😵‍💫</span>
-                        <p>Non sai quando incastrare le tue attività?</p>
-                    </div>
-                    <div class="problem-point">
-                        <span class="problem-icon">🔄</span>
-                        <p>Fai avanti e indietro tra app, orari, mappe e promemoria?</p>
-                    </div>
-                    <div class="problem-point">
-                        <span class="problem-icon">⏰</span>
-                        <p>Il tuo calendario è sempre pieno ma non riflette le tue priorità?</p>
-                    </div>
-                </div>
-            </div>
-            <div class="solution">
-                <h2>Con Squeeze Calendar è diverso</h2>
-                <div class="solution-steps">
-                    <div class="solution-step">
-                        <span class="step-number">1</span>
-                        <p>Inserisci task come parleresti a un amico</p>
-                        <span class="example">"Vorrei iniziare a leggere un libro ogni sera"</span>
-                    </div>
-                    <div class="solution-step">
-                        <span class="step-number">2</span>
-                        <p>Squeeze capisce, pianifica e adatta</p>
-                        <span class="example">Considera luogo, spostamenti e priorità</span>
-                    </div>
-                    <div class="solution-step">
-                        <span class="step-number">3</span>
-                        <p>La tua giornata ideale è pronta</p>
-                        <span class="example">Calendario ottimizzato e flessibile</span>
-                    </div>
-                </div>
-            </div>
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 Squeeze. All rights reserved.</p>
         </div>
-    </section>
+    </div>
 
-    <!-- Come funziona -->
-    <section id="come-funziona" class="how-it-works">
-        <div class="container">
-            <h2 class="section-title">Come funziona in 3 semplici passi</h2>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-icon">💬</div>
-                    <h3>Parla con l'AI</h3>
-                    <p>Scrivi in chat cosa vuoi fare, anche senza dettagli precisi. L'AI capisce il linguaggio naturale.</p>
-                    <div class="step-example">
-                        <div class="chat-bubble">"Domani mattina vorrei andare a correre"</div>
-                    </div>
-                </div>
-                <div class="step-card">
-                    <div class="step-icon">🧠</div>
-                    <h3>Capisce il contesto</h3>
-                    <p>Riconosce luogo, priorità, tempo disponibile, abitudini e mezzi di trasporto.</p>
-                    <div class="step-visual">
-                        <div class="context-item">📍 Parco vicino casa</div>
-                        <div class="context-item">⏱️ 45 min disponibili</div>
-                        <div class="context-item">🌤️ Meteo favorevole</div>
-                    </div>
-                </div>
-                <div class="step-card">
-                    <div class="step-icon">✨</div>
-                    <h3>Crea la giornata ideale</h3>
-                    <p>Ti propone un calendario intelligente, con task ottimizzati e facilmente modificabili.</p>
-                    <div class="calendar-mini">
-                        <div class="time-slot">07:00 🏃‍♂️ Corsa al parco</div>
-                        <div class="time-slot">08:00 🚿 Doccia</div>
-                        <div class="time-slot">08:30 ☕ Colazione</div>
-                    </div>
-                </div>
-            </div>
-            <div class="bonus-step">
-                <div class="step-icon">🔄</div>
-                <h4>Ti segue in tempo reale</h4>
-                <p>Se sei in ritardo, ti avvisa. Se cambi idea, si adatta automaticamente.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Demo interattiva -->
-    <section class="interactive-demo">
-        <div class="container">
-            <h2>Guarda Squeeze Calendar in azione</h2>
-            <div class="demo-container">
-                <div class="demo-input">
-                    <div class="input-simulation">
-                        <div class="typing-text" id="typingDemo"></div>
-                        <div class="cursor">|</div>
-                    </div>
-                </div>
-                <div class="demo-arrow">→</div>
-                <div class="demo-output">
-                    <div class="calendar-transformation">
-                        <div class="calendar-day">
-                            <div class="day-header">Domani, Martedì 12</div>
-                            <div class="time-slots" id="timeSlots">
-                                <!-- Slots generati dinamicamente -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <button class="demo-restart" id="restartDemo">🔄 Riprova la demo</button>
-        </div>
-    </section>
-
-    <!-- Features -->
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Più di un calendario</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🧠</div>
-                    <h3>Pianificazione intelligente</h3>
-                    <p>L'AI sceglie durata e orario perfetti per ogni attività</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📍</div>
-                    <h3>Riconoscimento luoghi</h3>
-                    <p>Capisce dove sei e dove devi andare automaticamente</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🧭</div>
-                    <h3>Tempi di spostamento</h3>
-                    <p>Calcola quando devi partire considerando traffico e mezzi</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔁</div>
-                    <h3>Abitudini apprese</h3>
-                    <p>Ti suggerisce attività ricorrenti in base ai tuoi ritmi</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">✏️</div>
-                    <h3>Linguaggio naturale</h3>
-                    <p>Scrivi come parleresti, senza formati rigidi</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📷</div>
-                    <h3>Analisi immagini</h3>
-                    <p>Carica foto di volantini, biglietti o appunti</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🧍‍♂️</div>
-                    <h3>Bilanciamento carico</h3>
-                    <p>Ti chiede come ti senti per ottimizzare la giornata</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Adattamento real-time</h3>
-                    <p>Si aggiorna in base a imprevisti e cambiamenti</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Differenze -->
-    <section class="differences">
-        <div class="container">
-            <h2>Perché è diverso dagli altri calendari</h2>
-            <div class="comparison">
-                <div class="comparison-item old">
-                    <h3>📅 Calendari tradizionali</h3>
-                    <ul>
-                        <li>❌ Statici e rigidi</li>
-                        <li>❌ Tu ti adatti al calendario</li>
-                        <li>❌ Solo organizzazione manuale</li>
-                        <li>❌ Non considera il contesto</li>
-                    </ul>
-                </div>
-                <div class="vs">VS</div>
-                <div class="comparison-item new">
-                    <h3>🗜️ Squeeze Calendar</h3>
-                    <ul>
-                        <li>✅ Dinamico e flessibile</li>
-                        <li>✅ Il calendario si adatta a te</li>
-                        <li>✅ Assistente personale intelligente</li>
-                        <li>✅ Comprende la tua vita reale</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Squeeze Ecosystem -->
-    <section class="ecosystem">
-        <div class="container">
-            <div class="ecosystem-content">
-                <div class="ecosystem-text">
-                    <h2>È parte di Squeeze</h2>
-                    <p>Squeeze Calendar è una parte di <strong>Squeeze</strong>, la piattaforma pensata per rendere più fluida la tua vita personale e professionale.</p>
-                    <p>Comunicazione, task e ora anche tempo: tutto in un unico spazio.</p>
-                    <a href="#" class="ecosystem-link">Scopri il resto di Squeeze (in arrivo) →</a>
-                </div>
-                <div class="ecosystem-visual">
-                    <div class="squeeze-apps">
-                        <div class="app-item active">
-                            <span class="app-icon">📅</span>
-                            <span class="app-name">Calendar</span>
-                        </div>
-                        <div class="app-item coming">
-                            <span class="app-icon">💬</span>
-                            <span class="app-name">Chat</span>
-                        </div>
-                        <div class="app-item coming">
-                            <span class="app-icon">✅</span>
-                            <span class="app-name">Tasks</span>
-                        </div>
-                        <div class="app-item coming">
-                            <span class="app-icon">📊</span>
-                            <span class="app-name">Analytics</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Final -->
-    <section class="final-cta">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Unisciti ai primi a provarlo</h2>
-                <p>Ricevi accesso anticipato e aiutaci a perfezionare Squeeze Calendar</p>
-                <form class="waitlist-form" id="waitlistForm">
-                    <div class="form-group">
-                        <input type="email" placeholder="La tua email" required id="emailInput">
-                        <button type="submit" class="btn-primary">Unisciti alla lista</button>
-                    </div>
-                    <div class="form-extras">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="friendReferral">
-                            <span class="checkmark"></span>
-                            Invita un amico e salta la coda
-                        </label>
-                    </div>
-                </form>
-                <div class="success-message" id="successMessage">
-                    <span class="success-icon">✅</span>
-                    <p>Perfetto! Ti contatteremo presto con l'accesso anticipato.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq" class="faq">
-        <div class="container">
-            <h2>Domande frequenti</h2>
-            <div class="faq-list">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Serve Google Calendar?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Solo per le notifiche nel MVP. Squeeze Calendar può funzionare anche in modo indipendente, ma l'integrazione con Google Calendar ti permette di ricevere promemoria sui tuoi dispositivi.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Funziona offline?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>In parte sì. Puoi consultare il calendario e modificare eventi già pianificati, ma serve connessione internet per le funzionalità di AI e gli aggiornamenti intelligenti in tempo reale.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>È gratis?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Le prime versioni saranno gratuite per i beta tester. Successivamente avremo un piano personale gratuito con funzionalità base e piani premium per utenti avanzati e aziende.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>I miei dati sono sicuri?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Assolutamente sì. Tutti i dati sono crittografati e non vengono mai condivisi con terze parti. L'AI elabora le informazioni solo per ottimizzare il tuo calendario.</p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span>Quando sarà disponibile?</span>
-                        <span class="faq-toggle">+</span>
-                    </div>
-                    <div class="faq-answer">
-                        <p>La beta privata inizierà a breve per chi si iscrive alla lista d'attesa. Il lancio pubblico è previsto per i prossimi mesi del 2024.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <span class="logo-icon">🗜️</span>
-                        <span class="logo-text">Squeeze</span>
-                    </div>
-                    <p class="footer-tagline">Creato con cura in Italia 🇮🇹</p>
-                </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Prodotto</h4>
-                        <ul>
-                            <li><a href="#come-funziona">Come funziona</a></li>
-                            <li><a href="#features">Caratteristiche</a></li>
-                            <li><a href="#faq">FAQ</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Azienda</h4>
-                        <ul>
-                            <li><a href="#">Chi siamo</a></li>
-                            <li><a href="#">Privacy</a></li>
-                            <li><a href="#">Contatti</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Seguici</h4>
-                        <ul>
-                            <li><a href="#">LinkedIn</a></li>
-                            <li><a href="#">Twitter</a></li>
-                            <li><a href="#">Blog</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Squeeze. Tutti i diritti riservati.</p>
-            </div>
-        </div>
-    </footer>
-
+    <script src="/socket.io/socket.io.js"></script> <!-- AGGIUNTO: Libreria Socket.IO client -->
     <script src="assets/js/script.js"></script>
 </body>
 </html>
