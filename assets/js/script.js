@@ -1,112 +1,179 @@
 // DOM Elements
-const navbar = document.getElementById('navbar');
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-const mobileMenu = document.getElementById('mobileMenu');
+const hamburger = document.querySelector('.hamburger');
+const navMenu = document.querySelector('.nav-menu');
+const header = document.querySelector('.header');
+const typingDemo = document.getElementById('typingDemo');
+const timeSlots = document.getElementById('timeSlots');
+const restartDemo = document.getElementById('restartDemo');
 const waitlistForm = document.getElementById('waitlistForm');
 const successMessage = document.getElementById('successMessage');
-const waitlistCounter = document.getElementById('waitlistCounter');
 const faqItems = document.querySelectorAll('.faq-item');
 
-// Mobile Menu Toggle
-mobileMenuToggle.addEventListener('click', () => {
-    mobileMenu.classList.toggle('show');
-    mobileMenuToggle.classList.toggle('active');
+// Mobile menu toggle
+hamburger?.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    navMenu.classList.toggle('active');
 });
 
-// Close mobile menu when clicking on links
-document.querySelectorAll('.mobile-nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-        mobileMenu.classList.remove('show');
-        mobileMenuToggle.classList.remove('active');
-    });
-});
-
-// Navbar scroll effect
-let lastScrollY = window.scrollY;
-
+// Header scroll effect
 window.addEventListener('scroll', () => {
-    const currentScrollY = window.scrollY;
-    
-    if (currentScrollY > 100) {
-        navbar.style.transform = 'translateX(-50%) translateY(-10px)';
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+    if (window.scrollY > 100) {
+        header.style.background = 'rgba(255, 255, 255, 0.98)';
+        header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
     } else {
-        navbar.style.transform = 'translateX(-50%) translateY(0)';
-        navbar.style.background = 'rgba(255, 255, 255, 0.8)';
+        header.style.background = 'rgba(255, 255, 255, 0.95)';
+        header.style.boxShadow = 'none';
+    }
+});
+
+// Demo typing animation
+const demoTexts = [
+    "Domani mattina vorrei andare a correre",
+    "Devo comprare un regalo per mamma",
+    "Vorrei iniziare a leggere un libro ogni sera",
+    "Ho un appuntamento dal dentista giovedì"
+];
+
+const demoSlots = [
+    [
+        { text: "🏃‍♂️ Corsa al parco • 07:00-07:45", delay: 0 },
+        { text: "🚿 Doccia • 08:00-08:15", delay: 200 },
+        { text: "☕ Colazione • 08:30-09:00", delay: 400 }
+    ],
+    [
+        { text: "🛍️ Shopping centro • 15:00-16:30", delay: 0 },
+        { text: "🎁 Negozio regali • 16:45-17:30", delay: 200 },
+        { text: "🚗 Ritorno a casa • 17:30-18:00", delay: 400 }
+    ],
+    [
+        { text: "📚 Lettura • 21:00-21:30", delay: 0 },
+        { text: "🛏️ Preparazione notte • 21:30-22:00", delay: 200 },
+        { text: "😴 Sonno • 22:00", delay: 400 }
+    ],
+    [
+        { text: "🦷 Dentista • 14:30-15:30", delay: 0 },
+        { text: "🚗 Viaggio ritorno • 15:30-16:00", delay: 200 },
+        { text: "☕ Pausa relax • 16:15-16:45", delay: 400 }
+    ]
+];
+
+let currentDemoIndex = 0;
+let typingTimeout;
+let slotsTimeout = [];
+
+function typeText(text, element, callback) {
+    element.textContent = '';
+    let i = 0;
+    
+    function type() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            typingTimeout = setTimeout(type, 50);
+        } else if (callback) {
+            setTimeout(callback, 500);
+        }
     }
     
-    lastScrollY = currentScrollY;
-});
-
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            const offsetTop = target.offsetTop - 100;
-            window.scrollTo({
-                top: offsetTop,
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// Hero CTA button
-document.getElementById('heroCTA').addEventListener('click', () => {
-    document.getElementById('waitlist').scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-    });
-});
-
-// Waitlist counter animation
-function animateCounter() {
-    const counter = waitlistCounter;
-    const target = 5247;
-    const duration = 2000;
-    const step = target / (duration / 16);
-    let current = 0;
-    
-    const timer = setInterval(() => {
-        current += step;
-        if (current >= target) {
-            current = target;
-            clearInterval(timer);
-        }
-        counter.textContent = Math.floor(current).toLocaleString();
-    }, 16);
+    type();
 }
 
-// Intersection Observer for animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('fade-in-up');
+function showSlots(slots) {
+    timeSlots.innerHTML = '';
+    
+    slots.forEach((slot, index) => {
+        slotsTimeout.push(setTimeout(() => {
+            const slotElement = document.createElement('div');
+            slotElement.className = 'calendar-slot';
+            slotElement.textContent = slot.text;
+            slotElement.style.opacity = '0';
+            slotElement.style.transform = 'translateY(20px)';
+            timeSlots.appendChild(slotElement);
             
-            // Trigger counter animation when hero is visible
-            if (entry.target.classList.contains('hero')) {
-                setTimeout(animateCounter, 500);
-            }
-        }
+            // Animate in
+            setTimeout(() => {
+                slotElement.style.transition = 'all 0.5s ease';
+                slotElement.style.opacity = '1';
+                slotElement.style.transform = 'translateY(0)';
+            }, 50);
+        }, slot.delay));
     });
-}, observerOptions);
+}
 
-// Observe elements for animation
-document.querySelectorAll('.feature-card, .testimonial-card, .step, .faq-item').forEach(el => {
-    observer.observe(el);
+function runDemo() {
+    const currentText = demoTexts[currentDemoIndex];
+    const currentSlots = demoSlots[currentDemoIndex];
+    
+    typeText(currentText, typingDemo, () => {
+        showSlots(currentSlots);
+        
+        // Next demo after 3 seconds
+        setTimeout(() => {
+            currentDemoIndex = (currentDemoIndex + 1) % demoTexts.length;
+            runDemo();
+        }, 3000);
+    });
+}
+
+// Start demo when page loads
+window.addEventListener('load', () => {
+    setTimeout(runDemo, 1000);
 });
 
-// Observe hero section for counter animation
-observer.observe(document.querySelector('.hero'));
+// Restart demo button
+restartDemo?.addEventListener('click', () => {
+    // Clear existing timeouts
+    clearTimeout(typingTimeout);
+    slotsTimeout.forEach(timeout => clearTimeout(timeout));
+    slotsTimeout = [];
+    
+    currentDemoIndex = 0;
+    runDemo();
+});
 
-// FAQ functionality
+// Button interactions
+document.getElementById('previewBtn')?.addEventListener('click', () => {
+    alert('Anteprima in arrivo! Unisciti alla lista d\'attesa per essere tra i primi a provarla.');
+});
+
+document.getElementById('waitlistBtn')?.addEventListener('click', () => {
+    document.querySelector('.final-cta').scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('headerCTA')?.addEventListener('click', () => {
+    document.querySelector('.final-cta').scrollIntoView({ behavior: 'smooth' });
+});
+
+// Waitlist form
+waitlistForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('emailInput').value;
+    const friendReferral = document.getElementById('friendReferral').checked;
+    
+    // Simulate form submission
+    const submitButton = waitlistForm.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    
+    submitButton.textContent = 'Invio in corso...';
+    submitButton.disabled = true;
+    
+    setTimeout(() => {
+        waitlistForm.style.display = 'none';
+        successMessage.classList.add('show');
+        
+        // Store in localStorage (in a real app, send to server)
+        localStorage.setItem('squeeze_waitlist', JSON.stringify({
+            email,
+            friendReferral,
+            timestamp: new Date().toISOString()
+        }));
+        
+        console.log('Waitlist signup:', { email, friendReferral });
+    }, 2000);
+});
+
+// FAQ interactions
 faqItems.forEach(item => {
     const question = item.querySelector('.faq-question');
     
@@ -125,327 +192,128 @@ faqItems.forEach(item => {
     });
 });
 
-// Waitlist form submission
-waitlistForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData(waitlistForm);
-    const email = formData.get('email');
-    const name = formData.get('name');
-    const submitBtn = document.getElementById('submitBtn');
-    
-    // Validate email
-    if (!isValidEmail(email)) {
-        showNotification('Per favore inserisci un indirizzo email valido', 'error');
-        return;
-    }
-    
-    // Show loading state
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<span>Invio in corso...</span>';
-    submitBtn.disabled = true;
-    
-    try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Store in localStorage (in production, send to server)
-        const waitlistData = {
-            email,
-            name,
-            timestamp: new Date().toISOString(),
-            source: 'website'
-        };
-        
-        localStorage.setItem('squeeze_waitlist', JSON.stringify(waitlistData));
-        
-        // Show success message
-        waitlistForm.style.display = 'none';
-        successMessage.classList.add('show');
-        
-        // Update counter
-        const currentCount = parseInt(waitlistCounter.textContent.replace(/,/g, ''));
-        waitlistCounter.textContent = (currentCount + 1).toLocaleString();
-        
-        // Track conversion (in production, send to analytics)
-        trackEvent('waitlist_signup', {
-            email,
-            name,
-            timestamp: new Date().toISOString()
-        });
-        
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        showNotification('Si è verificato un errore. Riprova più tardi.', 'error');
-        
-        // Reset button
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-    }
+// Intersection Observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('fade-in-up');
+        }
+    });
+}, observerOptions);
+
+// Observe elements for animation
+document.querySelectorAll('.feature-card, .step-card, .problem-point, .solution-step').forEach(el => {
+    observer.observe(el);
 });
 
-// Email validation
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-// Notification system
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span class="notification-icon">${type === 'error' ? '❌' : '✅'}</span>
-            <span class="notification-message">${message}</span>
-        </div>
-    `;
-    
-    // Add styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: ${type === 'error' ? '#FEE2E2' : '#D1FAE5'};
-        color: ${type === 'error' ? '#DC2626' : '#059669'};
-        padding: 16px 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        z-index: 10000;
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-        border: 1px solid ${type === 'error' ? '#FECACA' : '#A7F3D0'};
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // Remove after 5 seconds
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 5000);
-}
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
 
 // Feature card hover effects
 document.querySelectorAll('.feature-card').forEach(card => {
     card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-12px)';
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+    });
+});
+
+// Step card hover effects
+document.querySelectorAll('.step-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-5px)';
         this.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
     });
     
     card.addEventListener('mouseleave', function() {
         this.style.transform = 'translateY(0)';
-        this.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1)';
+        this.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
     });
 });
 
-// Testimonial card hover effects
-document.querySelectorAll('.testimonial-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-8px)';
-    });
+// Console welcome message
+console.log('%c🗜️ Benvenuto in Squeeze Calendar!', 'color: #3B82F6; font-size: 18px; font-weight: bold;');
+console.log('%cStiamo rivoluzionando il modo di gestire il tempo con l\'AI', 'color: #F59E0B; font-size: 14px;');
+console.log('%cVuoi unirti al team? Scrivici!', 'color: #10B981; font-size: 14px;');
+
+// Add loading animation
+window.addEventListener('load', () => {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
     
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-    });
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 100);
 });
 
-// Phone mockup animation
-function animatePhoneInterface() {
-    const events = document.querySelectorAll('.event');
-    events.forEach((event, index) => {
-        event.style.opacity = '0';
-        event.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-            event.style.transition = 'all 0.6s ease';
-            event.style.opacity = '1';
-            event.style.transform = 'translateY(0)';
-        }, (index + 1) * 300);
-    });
+// Email validation
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
 }
 
-// Start phone animation when hero is visible
-const heroObserver = new IntersectionObserver((entries) => {
+// Add some Easter eggs
+let clickCount = 0;
+document.querySelector('.logo')?.addEventListener('click', () => {
+    clickCount++;
+    if (clickCount === 5) {
+        alert('🎉 Hai scoperto un Easter egg! Sei davvero curioso... perfetto per Squeeze Calendar!');
+        clickCount = 0;
+    }
+});
+
+// Track user engagement (in a real app, send to analytics)
+const engagementData = {
+    pageViews: 1,
+    timeOnPage: Date.now(),
+    sectionsViewed: new Set(),
+    buttonsClicked: []
+};
+
+// Track section views
+const sections = document.querySelectorAll('section');
+const sectionObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            setTimeout(animatePhoneInterface, 1000);
-            heroObserver.unobserve(entry.target);
+            const sectionId = entry.target.id || entry.target.className.split(' ')[0];
+            engagementData.sectionsViewed.add(sectionId);
         }
     });
 }, { threshold: 0.5 });
 
-heroObserver.observe(document.querySelector('.hero'));
+sections.forEach(section => sectionObserver.observe(section));
 
-// Analytics tracking (placeholder)
-function trackEvent(eventName, properties = {}) {
-    // In production, integrate with your analytics service
-    console.log('Event tracked:', eventName, properties);
-    
-    // Example: Google Analytics 4
-    // gtag('event', eventName, properties);
-    
-    // Example: Mixpanel
-    // mixpanel.track(eventName, properties);
-}
-
-// Performance monitoring
-function measurePerformance() {
-    if ('performance' in window) {
-        window.addEventListener('load', () => {
-            const perfData = performance.getEntriesByType('navigation')[0];
-            const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
-            
-            trackEvent('page_performance', {
-                load_time: loadTime,
-                dom_content_loaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
-                first_paint: performance.getEntriesByType('paint')[0]?.startTime || 0
-            });
-        });
-    }
-}
-
-// Initialize performance monitoring
-measurePerformance();
-
-// Keyboard navigation for accessibility
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        // Close mobile menu
-        mobileMenu.classList.remove('show');
-        mobileMenuToggle.classList.remove('active');
-        
-        // Close any open FAQ items
-        faqItems.forEach(item => {
-            item.classList.remove('active');
-        });
-    }
-});
-
-// Lazy loading for images
-if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.remove('lazy');
-                imageObserver.unobserve(img);
-            }
+// Track button clicks
+document.querySelectorAll('button, .btn-primary, .btn-secondary').forEach(button => {
+    button.addEventListener('click', (e) => {
+        engagementData.buttonsClicked.push({
+            button: e.target.textContent.trim(),
+            timestamp: Date.now()
         });
     });
-    
-    document.querySelectorAll('img[data-src]').forEach(img => {
-        imageObserver.observe(img);
-    });
-}
-
-// Service Worker registration for PWA capabilities
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('SW registered: ', registration);
-            })
-            .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}
-
-// Dark mode detection and handling
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    // User prefers dark mode
-    document.body.classList.add('dark-mode-preferred');
-}
-
-// Listen for changes in color scheme preference
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    if (e.matches) {
-        document.body.classList.add('dark-mode-preferred');
-    } else {
-        document.body.classList.remove('dark-mode-preferred');
-    }
 });
 
-// Console welcome message
-console.log('%c🗜️ Benvenuto in Squeeze Calendar!', 'color: #FF8C00; font-size: 20px; font-weight: bold;');
-console.log('%cStiamo rivoluzionando la pianificazione con l\'AI', 'color: #FFC300; font-size: 14px;');
-console.log('%cInteressato a unirti al team? Contattaci!', 'color: #333; font-size: 14px;');
-
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    // Add loaded class to body for CSS animations
-    document.body.classList.add('loaded');
-    
-    // Track page view
-    trackEvent('page_view', {
-        page: 'landing',
-        timestamp: new Date().toISOString(),
-        user_agent: navigator.userAgent,
-        viewport: `${window.innerWidth}x${window.innerHeight}`
-    });
-});
-
-// Handle form input focus states
-document.querySelectorAll('.form-group input').forEach(input => {
-    input.addEventListener('focus', function() {
-        this.parentElement.classList.add('focused');
-    });
-    
-    input.addEventListener('blur', function() {
-        this.parentElement.classList.remove('focused');
-        if (this.value) {
-            this.parentElement.classList.add('filled');
-        } else {
-            this.parentElement.classList.remove('filled');
-        }
-    });
-});
-
-// Preload critical resources
-function preloadResources() {
-    const criticalResources = [
-        '/placeholder.svg?height=48&width=48',
-        // Add other critical resources here
-    ];
-    
-    criticalResources.forEach(resource => {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.href = resource;
-        link.as = 'image';
-        document.head.appendChild(link);
-    });
-}
-
-// Initialize preloading
-preloadResources();
-
-// Error handling for uncaught errors
-window.addEventListener('error', (e) => {
-    console.error('Uncaught error:', e.error);
-    trackEvent('javascript_error', {
-        message: e.message,
-        filename: e.filename,
-        lineno: e.lineno,
-        colno: e.colno,
-        stack: e.error?.stack
-    });
-});
-
-// Handle unhandled promise rejections
-window.addEventListener('unhandledrejection', (e) => {
-    console.error('Unhandled promise rejection:', e.reason);
-    trackEvent('promise_rejection', {
-        reason: e.reason?.toString(),
-        stack: e.reason?.stack
-    });
+// Send engagement data before page unload (in a real app)
+window.addEventListener('beforeunload', () => {
+    engagementData.timeOnPage = Date.now() - engagementData.timeOnPage;
+    console.log('Engagement data:', engagementData);
+    // In a real app: sendAnalytics(engagementData);
 });
