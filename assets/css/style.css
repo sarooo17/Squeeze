@@ -9,9 +9,9 @@ body {
   font-family: "Outfit", sans-serif;
   background-color: #ffffff;
   color: #4a4a4a;
-  height: 100vh; /* Modificato da min-height e rimosso overflow-x */
+  height: 100vh; 
   position: relative;
-  overflow: hidden; /* Aggiunto per prevenire scroll su entrambi gli assi */
+  overflow: hidden; 
 }
 
 /* Blob animations */
@@ -27,18 +27,18 @@ body {
   width: 600px;
   height: 600px;
   background-color: #ffc300;
-  top: -150px; /* Spostato leggermente più in alto */
-  left: -150px; /* Spostato leggermente più a sinistra */
-  animation: move-blob-1 15s infinite alternate ease-in-out; /* Durata ridotta, movimento più veloce */
+  top: -150px; 
+  left: -150px; 
+  animation: move-blob-1 15s infinite alternate ease-in-out; 
 }
 
 .blob-orange {
   width: 500px;
   height: 500px;
   background-color: #ff8c00;
-  bottom: -150px; /* Spostato leggermente più in basso */
-  right: -150px; /* Spostato leggermente più a destra */
-  animation: move-blob-2 12s infinite alternate ease-in-out; /* Durata ridotta, movimento più veloce */
+  bottom: -150px; 
+  right: -150px; 
+  animation: move-blob-2 12s infinite alternate ease-in-out; 
 }
 
 @keyframes move-blob-1 {
@@ -46,10 +46,10 @@ body {
     transform: translate(0, 0) scale(1);
   }
   50% {
-    transform: translate(180px, 120px) scale(1.15); /* Aumentato il range di movimento e lo scale */
+    transform: translate(180px, 120px) scale(1.15); 
   }
   100% {
-    transform: translate(40px, -70px) scale(0.85); /* Movimento e scale diversi al ritorno */
+    transform: translate(40px, -70px) scale(0.85); 
   }
 }
 
@@ -58,10 +58,10 @@ body {
     transform: translate(0, 0) scale(1);
   }
   50% {
-    transform: translate(-150px, -110px) scale(1.1); /* Aumentato il range di movimento e lo scale */
+    transform: translate(-150px, -110px) scale(1.1); 
   }
   100% {
-    transform: translate(-30px, 80px) scale(0.9); /* Movimento e scale diversi al ritorno */
+    transform: translate(-30px, 80px) scale(0.9); 
   }
 }
 
@@ -71,7 +71,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  height: 100%; /* Modificato da min-height: 100vh per adattarsi al body */
+  height: 100%; 
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -148,52 +148,38 @@ h1 {
   display: inline-block; 
   min-width: 55px;      
   text-align: right;    
-  /* padding: 0 2px; */
 }
 
-/* Input form STYLES - Assicurati che questi stili siano presenti e corretti */
-/* Stili generali per input e button sono già definiti sopra, qui ci concentriamo sul layout inline */
-
+/* Input form STYLES */
 .form-with-inline-button {
   position: relative; 
   display: flex; 
   width: 100%; 
-  max-width: 600px; /* Limita la larghezza del form stesso */
-  margin: 0 auto; /* Centra il form se il contenitore è più largo */
+  max-width: 600px; 
+  margin: 0 auto; 
 }
 
 .form-with-inline-button input[type="text"],
 .form-with-inline-button input[type="email"] {
-  flex-grow: 1; /* Fa sì che l'input occupi lo spazio rimanente */
-  padding-right: 175px; /* Spazio per il bottone "I want to try it" - aggiusta se necessario */
-  /* Mantiene gli altri stili dell'input come border, border-radius, etc. */
-  /* Assicurati che la larghezza non sia 100% qui se il bottone è posizionato assolutamente,
-     altrimenti l'input potrebbe spingere il bottone fuori.
-     Se il bottone è nel flusso (con flex), width:100% sull'input non è necessario
-     perché flex-grow si occupa dell'espansione.
-  */
+  flex-grow: 1; 
+  padding-right: 175px; 
 }
 
-/* Specifico per il bottone "Notify me" che potrebbe essere più corto */
 .form-with-inline-button input#email-input {
-    padding-right: 140px; /* Adattato per "Notify me" - aggiusta se necessario */
+    padding-right: 140px; 
 }
-
 
 .form-with-inline-button button[type="submit"] {
   position: absolute;
   top: 50%;
-  right: 6px; /* Distanza dal bordo destro dell'input/form */
+  right: 6px; 
   transform: translateY(-50%);
-  padding: 10px 18px; /* Padding per il bottone interno */
-  border-radius: 16px; /* Leggermente inferiore all'input per stare bene dentro */
-  white-space: nowrap; /* Evita che il testo del bottone vada a capo */
-  height: calc(100% - 12px); /* Tenta di far combaciare l'altezza con l'input, considerando i bordi/padding dell'input */
-  line-height: normal; /* Resetta line-height */
-  /* Gli altri stili del bottone (background-color, color, font, etc.) rimangono invariati */
-  /* Rimuovi width se non necessario, lascia che il padding lo definisca */
+  padding: 10px 18px; 
+  border-radius: 16px; 
+  white-space: nowrap; 
+  height: calc(100% - 12px); 
+  line-height: normal; 
 }
-
 
 input {
   padding: 15px 20px; 
@@ -221,8 +207,6 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  /* Rimosso white-space: nowrap; da qui se gestito specificamente sopra */
-  /* height: 50px; // Altezza fissa per input e bottone potrebbe aiutare, da testare */
 }
 
 button:hover {
@@ -249,40 +233,28 @@ button:hover {
   color: #777;
 }
 
-/* Utility classes */
-/* .hidden {
-  display: none; // COMMENTATA O RIMOSSA
-} */
-
-/* NUOVE CLASSI PER TRANSIZIONI FLUIDE */
-/* .form-step-container, .form-step-container.is-hidden, .form-element, .message-element ecc.
-   saranno sostituiti o adattati dalla nuova logica .form-flow-container e .form-step
-*/
-
 /* NUOVI STILI PER IL FLUSSO DEL FORM */
 .form-flow-container {
   width: 100%;
-  max-width: 700px; /* Larghezza massima per il contenitore del flusso */
-  margin: 0 auto 20px auto; /* Centra e aggiunge margine inferiore */
-  position: relative; /* Per posizionare gli step in modo assoluto */
-  /* CALCOLA L'ALTEZZA NECESSARIA PER L'ELEMENTO PIU' ALTO (form o messaggio) */
-  /* Esempio: se un form è alto 50px + padding/margini, e un messaggio 30px, usa l'altezza maggiore. */
-  min-height: 80px; /* ESEMPIO: DA AGGIUSTARE IN BASE AL TUO CONTENUTO PIU' ALTO */
+  max-width: 700px; 
+  margin: 0 auto 20px auto; 
+  position: relative; 
+  min-height: 80px; 
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .form-step {
-  position: absolute; /* Tutti gli step sono sovrapposti */
+  position: absolute; 
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%; /* Occupa la larghezza del .form-flow-container */
+  width: 100%; 
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.4s ease-in-out, visibility 0s linear 0.4s;
-  display: flex; /* Per centrare il contenuto dello step se necessario */
+  display: flex; 
   justify-content: center;
   align-items: center;
 }
@@ -293,15 +265,12 @@ button:hover {
   transition: opacity 0.4s ease-in-out, visibility 0s linear 0s;
 }
 
-/* Assicurati che i messaggi non abbiano margini che creano spazio extra quando non visibili */
 .feedback-message,
 .thank-you-message {
-  /* margin-bottom: 20px; // Rimuovi o gestisci con cautela */
   font-size: 1.25rem;
-  text-align: center; /* Centra il testo dei messaggi */
-  width: 100%; /* Occupa la larghezza per un corretto centraggio */
+  text-align: center; 
+  width: 100%; 
 }
-
 
 /* Frosted glass effect */
 .glass {
@@ -314,6 +283,189 @@ button:hover {
 }
 
 /* Responsive styles */
+@media (max-width: 767px) { /* Tablet e telefoni grandi in landscape */
+  .container {
+    padding: 15px;
+  }
+  
+  .content {
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 3rem; 
+    margin-bottom: 20px;
+  }
+
+  .slogan {
+    font-size: 1.25rem; 
+  }
+  
+  .slogan-container {
+    height: auto; 
+    min-height: 40px; 
+    margin-bottom: 30px;
+  }
+
+  .counter-text {
+    font-size: 1rem; 
+  }
+  
+  .highlight-counter {
+    font-size: 1.25rem; 
+  }
+
+  .counter-container {
+    margin-bottom: 30px;
+  }
+
+  .form-flow-container {
+    min-height: 70px; 
+    margin-bottom: 15px;
+    max-width: 90%; /* Rende il form un po' più stretto su tablet */
+  }
+
+  .form-with-inline-button input[type="text"],
+  .form-with-inline-button input[type="email"] {
+    padding-right: 145px; 
+    font-size: 0.9rem;
+  }
+
+  .form-with-inline-button input#email-input {
+    padding-right: 120px; 
+  }
+
+  .form-with-inline-button button[type="submit"] {
+    padding: 8px 14px; 
+    font-size: 0.9rem;
+  }
+  
+  input {
+    padding: 12px 15px;
+    font-size: 0.9rem;
+  }
+
+  button { 
+    padding: 12px 25px;
+    font-size: 0.9rem;
+  }
+
+  .feedback-message,
+  .thank-you-message {
+    font-size: 1.1rem; 
+  }
+
+  .logo {
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+
+  .logo img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .footer {
+    padding: 15px;
+    font-size: 0.8rem;
+  }
+
+  .blob-yellow {
+    width: 450px;
+    height: 450px;
+    filter: blur(70px);
+    animation-duration: 18s; 
+  }
+
+  .blob-orange {
+    width: 350px;
+    height: 350px;
+    filter: blur(60px);
+    animation-duration: 15s; 
+  }
+}
+
+@media (max-width: 480px) { /* Telefoni piccoli */
+  .container {
+    padding: 10px;
+  }
+  
+  .content {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 2.2rem; 
+  }
+
+  .slogan {
+    font-size: 1rem; 
+  }
+
+  .counter-text {
+    font-size: 0.9rem;
+  }
+  
+  .highlight-counter {
+    font-size: 1.1rem;
+    min-width: 45px;
+  }
+  
+  .form-flow-container {
+    max-width: 100%; 
+    padding-left: 5px; 
+    padding-right: 5px;
+  }
+
+  .form-with-inline-button {
+    flex-direction: column; 
+    position: static; 
+  }
+
+  .form-with-inline-button input[type="text"],
+  .form-with-inline-button input[type="email"] {
+    padding-right: 15px; 
+    width: 100%;
+    margin-bottom: 10px; 
+  }
+  
+  .form-with-inline-button input#email-input {
+    padding-right: 15px; 
+  }
+
+  .form-with-inline-button button[type="submit"] {
+    position: static; 
+    transform: none; 
+    width: 100%; 
+    height: auto; 
+    padding: 12px 20px; 
+  }
+
+  .feedback-message,
+  .thank-you-message {
+    font-size: 1rem;
+  }
+
+  .logo {
+    margin-bottom: 20px;
+  }
+
+  .blob-yellow {
+    width: 300px;
+    height: 300px;
+    filter: blur(50px);
+    opacity: 0.25;
+  }
+
+  .blob-orange {
+    width: 250px;
+    height: 250px;
+    filter: blur(40px);
+    opacity: 0.25;
+  }
+}
+
+/* Esistente @media (min-width: 768px) - Assicurati che sia dopo le media query max-width se vuoi che sovrascriva */
 @media (min-width: 768px) {
   h1 {
     font-size: 5rem;
@@ -322,10 +474,7 @@ button:hover {
   .slogan {
     font-size: 1.75rem;
   }
-
-  /* Le seguenti regole potrebbero non essere più necessarie o potrebbero necessitare di aggiustamenti
-     ora che il bottone è posizionato in modo assoluto all'interno dell'input.
-     Per ora le commento per vedere l'effetto. */
+  /* Le regole commentate qui sotto erano già commentate, le lascio così */
   /*
   form {
     flex-direction: row;

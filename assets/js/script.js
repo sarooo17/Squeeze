@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const socket = io('https://IL_TUO_URL_BACKEND_DEPLOYATO'); // MODIFICA QUI
+  const socket = io('https://squeeze.eu-north-1.elasticbeanstalk.com'); // MODIFICA QUI
 
   const dynamicSlogan = document.getElementById("dynamic-slogan");
   const counterElement = document.getElementById("counter");

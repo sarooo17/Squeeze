@@ -1,20 +1,20 @@
-require('dotenv').config(); // AGGIUNGI QUESTA RIGA ALL'INIZIO DEL FILE
+require('dotenv').config(); 
 
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 const fs = require('fs');
-const nodemailer = require('nodemailer'); // AGGIUNTO: Nodemailer
+const nodemailer = require('nodemailer');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Già corretto per Elastic Beanstalk
 const SUGGESTIONS_FILE_PATH = path.join(__dirname, 'suggestions.json');
 
-let emailCounter = 346;
+let emailCounter = 346; // Considera di rendere persistente anche questo se necessario
 
 // Funzione per leggere i suggerimenti (invariata)
 function readSuggestions() {
@@ -30,6 +30,8 @@ function readSuggestions() {
 }
 
 // Funzione per scrivere i suggerimenti (invariata)
+// ATTENZIONE: Questa scrittura su file non sarà persistente su Elastic Beanstalk
+// a causa del filesystem effimero. Dovrai passare a un database.
 function writeSuggestions(suggestions) {
   try {
     fs.writeFileSync(SUGGESTIONS_FILE_PATH, JSON.stringify(suggestions, null, 2), 'utf8');
@@ -38,39 +40,24 @@ function writeSuggestions(suggestions) {
   }
 }
 
-// AGGIUNTO: Configurazione del transporter di Nodemailer
-// SOSTITUISCI QUESTO CON LA CONFIGURAZIONE DEL TUO SERVIZIO EMAIL REALE
-// Per esempio, usando un account Gmail (per test, meno sicuro per produzione):
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: 'TUA_EMAIL_GMAIL@gmail.com', // La tua email Gmail
-//     pass: 'TUA_PASSWORD_GMAIL_O_PASSWORD_PER_APP' // La tua password Gmail o una password per app
-//   }
-// });
-// Per servizi come SendGrid, Mailgun, etc., la configurazione sarà diversa.
-// Consulta la documentazione di Nodemailer e del tuo provider.
-// È FONDAMENTALE USARE VARIABILI D'AMBIENTE PER LE CREDENZIALI IN PRODUZIONE!
+// Configurazione del transporter di Nodemailer
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com', // Sostituisci con l'host SMTP del tuo provider
-  port: 587, // O 465 per SSL
-  secure: false, // true per la porta 465, false per altre
+  host: process.env.SMTP_HOST, // USA VARIABILE D'AMBIENTE (es. email-smtp.us-east-1.amazonaws.com per SES)
+  port: parseInt(process.env.SMTP_PORT || "587"), // USA VARIABILE D'AMBIENTE (es. 587 per SES con STARTTLS)
+  secure: process.env.SMTP_SECURE === 'true', // USA VARIABILE D'AMBIENTE (es. false per SES con STARTTLS sulla porta 587)
   auth: {
-    user: process.env.EMAIL_USER, // USA VARIABILI D'AMBIENTE
-    pass: process.env.EMAIL_PASS  // USA VARIABILI D'AMBIENTE
-  },
-  tls: {
-    // Non fallire su certificati self-signed (per alcuni server di test locali)
-    // Rimuovi in produzione se usi un provider affidabile
-    // rejectUnauthorized: false 
+    user: process.env.EMAIL_USER, // Già corretto
+    pass: process.env.EMAIL_PASS  // Già corretto
   }
+  // La sezione tls: { rejectUnauthorized: false } è stata rimossa,
+  // non dovrebbe essere necessaria con un provider affidabile come SES.
 });
 
-// AGGIUNTO: Funzione per inviare l'email di ringraziamento
+// Funzione per inviare l'email di ringraziamento
 async function sendThankYouEmail(userEmail, suggestion) {
-  const logoUrl = 'https://www.squeeze-it.com/assets/images/logo.png'; // MODIFICA QUI con l'URL pubblico del tuo logo
+  // USA VARIABILE D'AMBIENTE per l'URL del logo, con un fallback se non definita
+  const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png'; 
 
-  // AGGIUNTO: Array di variazioni testuali
   const emailTextVariations = [
     {
       greeting: "Hello there,",
@@ -110,9 +97,9 @@ async function sendThankYouEmail(userEmail, suggestion) {
   const selectedText = emailTextVariations[Math.floor(Math.random() * emailTextVariations.length)];
 
   const mailOptions = {
-    from: `"Squeeze Calendar" <${process.env.EMAIL_FROM || 'rickysaro17@gmail.com'}>`,
+    from: `"Squeeze Calendar" <${process.env.EMAIL_FROM}>`, // Già corretto (assicurati che EMAIL_FROM sia impostata)
     to: userEmail,
-    subject: 'Welcome to the Squeeze Calendar Waitlist! ✨', // L'oggetto può anche essere variato se lo desideri
+    subject: 'Welcome to the Squeeze Calendar Waitlist! ✨', 
     html: `
       <!DOCTYPE html>
       <html lang="en">
@@ -232,7 +219,8 @@ async function sendThankYouEmail(userEmail, suggestion) {
   try {
     let info = await transporter.sendMail(mailOptions);
     console.log('Email di ringraziamento inviata: %s', info.messageId);
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info)); // Utile con ethereal.email
+    // La riga seguente è utile principalmente con ethereal.email o simili, potrebbe non essere necessaria con SES
+    // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info)); 
   } catch (error) {
     console.error('Errore durante l\'invio dell\'email di ringraziamento:', error);
   }
@@ -251,7 +239,7 @@ io.on('connection', (socket) => {
     socket.emit('updateCounter', emailCounter);
   });
   
-  socket.on('newEmail', async (data) => { // MODIFICATO: reso async
+  socket.on('newEmail', async (data) => { 
     const { email, suggestion } = data;
     if (!email || !suggestion) {
       console.error('Dati email o suggerimento mancanti:', data);
@@ -261,12 +249,11 @@ io.on('connection', (socket) => {
     
     const suggestions = readSuggestions();
     suggestions.push({ email, suggestion, timestamp: new Date().toISOString() });
-    writeSuggestions(suggestions);
+    writeSuggestions(suggestions); // Ricorda: non persistente su EB
 
     emailCounter++;
     io.emit('updateCounter', emailCounter);
 
-    // INVIA L'EMAIL DI RINGRAZIAMENTO
     await sendThankYouEmail(email, suggestion).catch(err => {
         console.error("Fallimento nell'invio dell'email in background:", err);
     });
@@ -279,10 +266,7 @@ io.on('connection', (socket) => {
 
 server.listen(PORT, () => {
   console.log(`Server in ascolto sulla porta ${PORT}`);
-  console.log(`Apri http://localhost:${PORT} nel tuo browser.`);
-  // Esempio di come potresti impostare le variabili d'ambiente per il test (NON PER PRODUZIONE)
-  // process.env.EMAIL_USER = 'tua_email@provider.com';
-  // process.env.EMAIL_PASS = 'tua_password';
-  // process.env.EMAIL_FROM = 'nome_app@provider.com';
-  // console.log("Ricorda di configurare le variabili d'ambiente EMAIL_USER, EMAIL_PASS, EMAIL_FROM per l'invio email.");
+  // Rimosso il log di localhost qui perché su EB non è rilevante
+  // console.log(`Apri http://localhost:${PORT} nel tuo browser.`);
+  console.log("Variabili d'ambiente per l'email dovrebbero essere configurate sulla piattaforma di hosting (es. Elastic Beanstalk).");
 });
