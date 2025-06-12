@@ -315,7 +315,4 @@ function handleDisconnect(socket) {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server in ascolto sulla porta ${PORT}`);
-  // Rimosso il log di localhost qui perché su EB non è rilevante
-  // console.log(`Apri http://localhost:${PORT} nel tuo browser.`);
-  console.log("Variabili d'ambiente per l'email dovrebbero essere configurate sulla piattaforma di hosting (es. Elastic Beanstalk).");
 });

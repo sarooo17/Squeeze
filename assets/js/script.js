@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const socket = io('https://squeeze.eu-north-1.elasticbeanstalk.com'); 
+  const socket = io('https://squeeze-833522296941.europe-west1.run.app'); 
 
   const dynamicSlogan = document.getElementById("dynamic-slogan");
   const counterElement = document.getElementById("counter");
