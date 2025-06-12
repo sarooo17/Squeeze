@@ -5,14 +5,23 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Impedisce lo scroll orizzontale a livello radice in modo aggressivo */
+  overflow-x: hidden !important; 
+  width: 100%;
+}
+
 body {
   font-family: "Outfit", sans-serif;
   background-color: #ffffff;
   color: #4a4a4a;
-  height: 100vh; 
+  /* height: 100vh; // Sostituito con min-height e overflow gestito */
+  min-height: 100vh; /* Permette al body di crescere se necessario (es. tastiera mobile) */
   position: relative;
-  max-height: 100dvh;
-  overflow: hidden; 
+  /* max-height: 100dvh; // dvh è buono, ma min-height è più flessibile per lo scroll verticale */
+  overflow-x: hidden !important; /* Impedisce lo scroll orizzontale a livello body */
+  /* overflow-y: auto; // Permette lo scroll verticale solo se necessario */
+  width: 100%; /* Assicura che il body non sia più largo della viewport */
 }
 
 /* Blob animations */
@@ -22,6 +31,8 @@ body {
   filter: blur(80px);
   opacity: 0.3;
   z-index: -1;
+  /* Tentativo di contenere i blob, ma potrebbero essere ancora problematici */
+  /* max-width: 100vw; // Potrebbe non essere sufficiente se l'origine è fuori schermo */
 }
 
 .blob-yellow {
@@ -69,16 +80,17 @@ body {
 /* Container */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1200px; /* Limita la larghezza massima su desktop */
   margin: 0 auto;
-  padding: 20px;
-  height: 100%; 
+  padding: 20px; /* Padding interno */
+  min-height: 100vh; /* Assicura che il container prenda almeno tutta l'altezza */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  /* overflow: hidden; // Rimuoviamo questo, lasciamo che html/body gestiscano l'overflow globale */
 }
 
 /* Logo */
@@ -95,8 +107,8 @@ body {
 /* Content */
 .content {
   text-align: center;
-  max-width: 800px;
-  width: 100%;
+  max-width: 800px; /* Limita la larghezza del contenuto principale */
+  width: 100%; /* Occupa la larghezza disponibile all'interno del .container */
   padding: 20px;
   flex-grow: 1;
   display: flex;
@@ -156,7 +168,7 @@ h1 {
   position: relative; 
   display: flex; 
   width: 100%; 
-  max-width: 600px; 
+  max-width: 600px; /* Limita la larghezza del form */
   margin: 0 auto; 
 }
 
@@ -237,13 +249,14 @@ button:hover {
 /* NUOVI STILI PER IL FLUSSO DEL FORM */
 .form-flow-container {
   width: 100%;
-  max-width: 700px; 
+  max-width: 700px; /* Limita la larghezza del contenitore del flusso */
   margin: 0 auto 20px auto; 
   position: relative; 
   min-height: 80px; 
   display: flex;
   align-items: center;
   justify-content: center;
+  /* overflow: hidden; // Aggiunto per contenere gli step assoluti */
 }
 
 .form-step {
@@ -251,7 +264,8 @@ button:hover {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%; 
+  width: 100%; /* Occupa la larghezza del .form-flow-container */
+  padding: 0 10px; /* Aggiungi un piccolo padding per evitare che il contenuto tocchi i bordi */
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.4s ease-in-out, visibility 0s linear 0.4s;
@@ -323,7 +337,7 @@ button:hover {
   .form-flow-container {
     min-height: 70px; 
     margin-bottom: 15px;
-    max-width: 90%; /* Rende il form un po' più stretto su tablet */
+    max-width: 95%; /* Leggermente più largo, ma non 100% per evitare bordi */
   }
 
   .form-with-inline-button input[type="text"],
@@ -413,25 +427,27 @@ button:hover {
   }
   
   .form-flow-container {
-    max-width: 100%; 
-    padding-left: 5px; 
-    padding-right: 5px;
+    max-width: 100%; /* Permetti che occupi tutta la larghezza disponibile */
+    padding-left: 0; /* Rimuovi padding se .form-step ha il suo */
+    padding-right: 0;
   }
 
   .form-with-inline-button {
     flex-direction: column; 
     position: static; 
+    /* max-width: 95%; // Potrebbe essere utile per dare un piccolo margine */
+    /* margin: 0 auto; // Per centrarlo se max-width è usato */
   }
 
   .form-with-inline-button input[type="text"],
   .form-with-inline-button input[type="email"] {
-    padding-right: 15px; 
+    padding-right: 15px; /* Resetta il padding per il bottone inline */
     width: 100%;
     margin-bottom: 10px; 
   }
   
   .form-with-inline-button input#email-input {
-    padding-right: 15px; 
+    padding-right: 15px; /* Resetta il padding */
   }
 
   .form-with-inline-button button[type="submit"] {
@@ -451,18 +467,13 @@ button:hover {
     margin-bottom: 20px;
   }
 
-  .blob-yellow {
-    width: 300px;
-    height: 300px;
-    filter: blur(50px);
-    opacity: 0.25;
-  }
-
-  .blob-orange {
-    width: 250px;
-    height: 250px;
-    filter: blur(40px);
-    opacity: 0.25;
+  .blob-yellow, .blob-orange {
+    /* Considera di nasconderli o ridurli drasticamente su schermi molto piccoli se causano problemi */
+    /* display: none; */
+    width: 200px;
+    height: 200px;
+    filter: blur(30px);
+    opacity: 0.15;
   }
 }
 
