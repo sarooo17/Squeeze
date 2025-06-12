@@ -5,19 +5,22 @@ const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 const fs = require('fs');
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setDataResidency('EU');
 
 const app = express();
 const server = http.createServer(app);
 // MODIFICA QUI: Aggiungi la configurazione CORS
 const io = socketIo(server, {
   cors: {
-    origin: "https://saroo17.github.io", // L'URL del tuo sito su GitHub Pages
+    origin: "https://www.squeeze-it.com", // Assicurati che sia questo l'URL del client
     methods: ["GET", "POST"],
-    allowedHeaders: ["my-custom-header"],
     credentials: true
   }
 });
+
+console.log(`Socket.IO server inizializzato. CORS origin: ${io.opts.cors.origin}`);
 
 const PORT = process.env.PORT || 3000; // Già corretto per Elastic Beanstalk
 const SUGGESTIONS_FILE_PATH = path.join(__dirname, 'suggestions.json');
@@ -48,23 +51,9 @@ function writeSuggestions(suggestions) {
   }
 }
 
-// Configurazione del transporter di Nodemailer
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST, // USA VARIABILE D'AMBIENTE (es. email-smtp.us-east-1.amazonaws.com per SES)
-  port: parseInt(process.env.SMTP_PORT || "587"), // USA VARIABILE D'AMBIENTE (es. 587 per SES con STARTTLS)
-  secure: process.env.SMTP_SECURE === 'true', // USA VARIABILE D'AMBIENTE (es. false per SES con STARTTLS sulla porta 587)
-  auth: {
-    user: process.env.EMAIL_USER, // Già corretto
-    pass: process.env.EMAIL_PASS  // Già corretto
-  }
-  // La sezione tls: { rejectUnauthorized: false } è stata rimossa,
-  // non dovrebbe essere necessaria con un provider affidabile come SES.
-});
-
 // Funzione per inviare l'email di ringraziamento
 async function sendThankYouEmail(userEmail, suggestion) {
-  // USA VARIABILE D'AMBIENTE per l'URL del logo, con un fallback se non definita
-  const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png'; 
+  const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png';
 
   const emailTextVariations = [
     {
@@ -101,13 +90,15 @@ async function sendThankYouEmail(userEmail, suggestion) {
     }
   ];
 
-  // Seleziona una variazione testuale casuale
   const selectedText = emailTextVariations[Math.floor(Math.random() * emailTextVariations.length)];
 
-  const mailOptions = {
-    from: `"Squeeze Calendar" <${process.env.EMAIL_FROM}>`, // Già corretto (assicurati che EMAIL_FROM sia impostata)
+  const msg = {
     to: userEmail,
-    subject: 'Welcome to the Squeeze Calendar Waitlist! ✨', 
+    from: {
+      email: process.env.EMAIL_FROM, // es: info@tuodominio.com (deve essere verificato su SendGrid)
+      name: 'Squeeze Calendar'
+    },
+    subject: 'Welcome to the Squeeze Calendar Waitlist! ✨',
     html: `
       <!DOCTYPE html>
       <html lang="en">
@@ -225,12 +216,13 @@ async function sendThankYouEmail(userEmail, suggestion) {
   };
 
   try {
-    let info = await transporter.sendMail(mailOptions);
-    console.log('Email di ringraziamento inviata: %s', info.messageId);
-    // La riga seguente è utile principalmente con ethereal.email o simili, potrebbe non essere necessaria con SES
-    // console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info)); 
+    await sgMail.send(msg);
+    console.log('Email di ringraziamento inviata a:', userEmail);
   } catch (error) {
     console.error('Errore durante l\'invio dell\'email di ringraziamento:', error);
+    if (error.response) {
+      console.error(error.response.body);
+    }
   }
 }
 
@@ -240,40 +232,89 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Evento per ricevere nuove email e suggerimenti
 io.on('connection', (socket) => {
-  console.log('Un client si è connesso');
-
-  socket.on('getInitialCounter', () => {
-    socket.emit('updateCounter', emailCounter);
-  });
+  console.log(`Nuovo client connesso: ${socket.id} da ${socket.handshake.address}`);
   
-  socket.on('newEmail', async (data) => { 
-    const { email, suggestion } = data;
-    if (!email || !suggestion) {
-      console.error('Dati email o suggerimento mancanti:', data);
-      return; 
-    }
-    console.log('Nuova email ricevuta:', email, 'con suggerimento:', suggestion);
-    
-    const suggestions = readSuggestions();
-    suggestions.push({ email, suggestion, timestamp: new Date().toISOString() });
-    writeSuggestions(suggestions); // Ricorda: non persistente su EB
+  socket.on('joinRoom', (room) => {
+    socket.join(room);
+    socket.room = room;
+    console.log(`Client ${socket.id} si è unito alla stanza ${room}`);
+  });
 
-    emailCounter++;
-    io.emit('updateCounter', emailCounter);
-
-    await sendThankYouEmail(email, suggestion).catch(err => {
-        console.error("Fallimento nell'invio dell'email in background:", err);
+  socket.on('candidate', (data) => {
+    socket.to(socket.room).emit('candidate', { 
+      candidate: data,
+      id: socket.id 
     });
+    // console.log(`Candidato ICE ricevuto da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
+  });
+
+  socket.on('offer', (data) => {
+    socket.to(socket.room).emit('offer', {
+      offer: data,
+      id: socket.id
+    });
+    // console.log(`Offerta ricevuta da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
+  });
+
+  socket.on('answer', (data) => {
+    socket.to(socket.room).emit('answer', {
+      answer: data,
+      id: socket.id
+    });
+    // console.log(`Risposta ricevuta da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
   });
 
   socket.on('disconnect', () => {
-    console.log('Un client si è disconnesso');
+    console.log(`Client disconnesso: ${socket.id}`);
+    // Invia un messaggio agli altri client nella stanza
+    socket.to(socket.room).emit('userDisconnected', { id: socket.id });
+  });
+
+  socket.on('error', (err) => {
+    console.error(`Errore socket per client ${socket.id}:`, err);
+  });
+
+  socket.on('newEmail', async ({ email, suggestion }) => {
+    // Salva il suggerimento
+    const suggestions = readSuggestions();
+    suggestions.push({ email, suggestion, date: new Date().toISOString() });
+    writeSuggestions(suggestions);
+
+    // Aggiorna il counter
+    emailCounter = suggestions.length;
+
+    // Invia il nuovo counter a tutti i client
+    io.emit('updateCounter', emailCounter);
+
+    // Invia l'email di ringraziamento
+    await sendThankYouEmail(email, suggestion);
+  });
+
+  // Invia il counter iniziale al client che si connette
+  socket.on('getInitialCounter', () => {
+    socket.emit('updateCounter', emailCounter);
   });
 });
 
+io.engine.on("connection_error", (err) => {
+  console.error("Socket.IO Engine Connection Error:");
+  // console.error("Richiesta:", err.req); // L'oggetto richiesta può essere grande
+  console.error("Codice errore:", err.code);
+  console.error("Messaggio:", err.message);
+  console.error("Contesto:", err.context);
+});
+
+// Funzione per gestire la disconnessione dei client
+function handleDisconnect(socket) {
+  console.log(`Client disconnesso: ${socket.id}`);
+  // Invia un messaggio agli altri client nella stanza
+  socket.to(socket.room).emit('userDisconnected', { id: socket.id });
+}
+
 server.listen(PORT, () => {
-  console.log(`Server in ascolto sulla porta ${PORT}`);
+  console.log(`Server in ascolto sulla porta ${PORT}`); // Già presente, ma verifica che sia PORT e non 8080 hardcoded
   // Rimosso il log di localhost qui perché su EB non è rilevante
   // console.log(`Apri http://localhost:${PORT} nel tuo browser.`);
   console.log("Variabili d'ambiente per l'email dovrebbero essere configurate sulla piattaforma di hosting (es. Elastic Beanstalk).");
