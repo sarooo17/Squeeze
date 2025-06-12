@@ -3,8 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const path = require('path');
-const fs = require('fs');
+const mongoose = require('mongoose'); // <--- aggiunto
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 //sgMail.setDataResidency('EU');
@@ -23,33 +22,23 @@ const io = socketIo(server, {
 console.log(`Socket.IO server inizializzato. CORS origin: ${io.opts.cors.origin}`);
 
 const PORT = process.env.PORT || 8080;
-const SUGGESTIONS_FILE_PATH = path.join(__dirname, 'suggestions.json');
+const BASE_COUNTER = 346;
 
-let emailCounter = 346; // Considera di rendere persistente anche questo se necessario
+// --- MONGODB SETUP ---
+const mongoUri = process.env.MONGODB_URI; // Imposta questa variabile su Cloud Run!
+mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connesso a MongoDB Atlas!'))
+  .catch(err => {
+    console.error('Errore di connessione a MongoDB:', err);
+    process.exit(1);
+  });
 
-// Funzione per leggere i suggerimenti (invariata)
-function readSuggestions() {
-  try {
-    if (fs.existsSync(SUGGESTIONS_FILE_PATH)) {
-      const data = fs.readFileSync(SUGGESTIONS_FILE_PATH, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error('Errore durante la lettura di suggestions.json:', error);
-  }
-  return [];
-}
-
-// Funzione per scrivere i suggerimenti (invariata)
-// ATTENZIONE: Questa scrittura su file non sarà persistente su Elastic Beanstalk
-// a causa del filesystem effimero. Dovrai passare a un database.
-function writeSuggestions(suggestions) {
-  try {
-    fs.writeFileSync(SUGGESTIONS_FILE_PATH, JSON.stringify(suggestions, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Errore durante la scrittura di suggestions.json:', error);
-  }
-}
+const suggestionSchema = new mongoose.Schema({
+  email: String,
+  suggestion: String,
+  date: { type: Date, default: Date.now }
+});
+const Suggestion = mongoose.model('Suggestion', suggestionSchema);
 
 // Funzione per inviare l'email di ringraziamento
 async function sendThankYouEmail(userEmail, suggestion) {
@@ -229,7 +218,15 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Evento per ricevere nuove email e suggerimenti
+// --- SOCKET.IO ---
+let emailCounter = BASE_COUNTER;
+
+async function updateCounterAndBroadcast() {
+  const count = await Suggestion.countDocuments();
+  emailCounter = BASE_COUNTER + count;
+  io.emit('updateCounter', emailCounter);
+}
+
 io.on('connection', (socket) => {
   console.log(`Nuovo client connesso: ${socket.id} da ${socket.handshake.address}`);
   
@@ -274,23 +271,21 @@ io.on('connection', (socket) => {
   });
 
   socket.on('newEmail', async ({ email, suggestion }) => {
-    // Salva il suggerimento
-    const suggestions = readSuggestions();
-    suggestions.push({ email, suggestion, date: new Date().toISOString() });
-    writeSuggestions(suggestions);
-
-    // Aggiorna il counter
-    emailCounter = suggestions.length;
-
-    // Invia il nuovo counter a tutti i client
-    io.emit('updateCounter', emailCounter);
-
-    // Invia l'email di ringraziamento
-    await sendThankYouEmail(email, suggestion);
+    try {
+      // Salva nel DB
+      await Suggestion.create({ email, suggestion });
+      // Aggiorna il counter e notifica tutti i client
+      await updateCounterAndBroadcast();
+      // Invia l'email di ringraziamento
+      await sendThankYouEmail(email, suggestion);
+    } catch (err) {
+      console.error('Errore durante salvataggio/invio email:', err);
+    }
   });
 
   // Invia il counter iniziale al client che si connette
-  socket.on('getInitialCounter', () => {
+  socket.on('getInitialCounter', async () => {
+    await updateCounterAndBroadcast();
     socket.emit('updateCounter', emailCounter);
   });
 });
@@ -302,13 +297,6 @@ io.engine.on("connection_error", (err) => {
   console.error("Messaggio:", err.message);
   console.error("Contesto:", err.context);
 });
-
-// Funzione per gestire la disconnessione dei client
-function handleDisconnect(socket) {
-  console.log(`Client disconnesso: ${socket.id}`);
-  // Invia un messaggio agli altri client nella stanza
-  socket.to(socket.room).emit('userDisconnected', { id: socket.id });
-}
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server in ascolto sulla porta ${PORT}`);
