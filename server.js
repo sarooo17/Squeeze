@@ -22,7 +22,7 @@ const io = socketIo(server, {
 
 console.log(`Socket.IO server inizializzato. CORS origin: ${io.opts.cors.origin}`);
 
-const PORT = process.env.PORT || 3000; // Già corretto per Elastic Beanstalk
+const PORT = process.env.PORT || 8080;
 const SUGGESTIONS_FILE_PATH = path.join(__dirname, 'suggestions.json');
 
 let emailCounter = 346; // Considera di rendere persistente anche questo se necessario
@@ -313,8 +313,8 @@ function handleDisconnect(socket) {
   socket.to(socket.room).emit('userDisconnected', { id: socket.id });
 }
 
-server.listen(PORT, () => {
-  console.log(`Server in ascolto sulla porta ${PORT}`); // Già presente, ma verifica che sia PORT e non 8080 hardcoded
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server in ascolto sulla porta ${PORT}`);
   // Rimosso il log di localhost qui perché su EB non è rilevante
   // console.log(`Apri http://localhost:${PORT} nel tuo browser.`);
   console.log("Variabili d'ambiente per l'email dovrebbero essere configurate sulla piattaforma di hosting (es. Elastic Beanstalk).");
