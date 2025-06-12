@@ -11,6 +11,7 @@ body {
   color: #4a4a4a;
   height: 100vh; 
   position: relative;
+  max-height: 100dvh;
   overflow: hidden; 
 }
 
