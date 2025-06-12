@@ -9,7 +9,15 @@ const nodemailer = require('nodemailer');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+// MODIFICA QUI: Aggiungi la configurazione CORS
+const io = socketIo(server, {
+  cors: {
+    origin: "https://saroo17.github.io", // L'URL del tuo sito su GitHub Pages
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
+  }
+});
 
 const PORT = process.env.PORT || 3000; // Già corretto per Elastic Beanstalk
 const SUGGESTIONS_FILE_PATH = path.join(__dirname, 'suggestions.json');

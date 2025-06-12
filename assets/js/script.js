@@ -1,19 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const socket = io('https://squeeze.eu-north-1.elasticbeanstalk.com'); // MODIFICA QUI
+  const socket = io('https://squeeze.eu-north-1.elasticbeanstalk.com'); 
 
   const dynamicSlogan = document.getElementById("dynamic-slogan");
   const counterElement = document.getElementById("counter");
   
-  // Riferimenti agli step del form
   const formFlowContainer = document.getElementById("form-flow-container");
   const inputStep = document.getElementById("input-step");
   const feedbackStep = document.getElementById("feedback-step");
   const emailStep = document.getElementById("email-step");
   const thankyouStep = document.getElementById("thankyou-step");
 
-  // Riferimenti agli elementi interni
   const userForm = document.getElementById("user-form");
-  const userInputElement = document.getElementById("user-input");
+  const userInputElement = document.getElementById("user-input"); // Già presente
   const feedbackMessageElement = document.getElementById("feedback-message");
 
   const emailForm = document.getElementById("email-form");
@@ -41,6 +39,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentSloganIndex = 0;
   let initialAnimationDone = false; 
   let userSuggestion = ""; 
+
+  // Placeholder originali e per mobile
+  const originalPlaceholder = "How could a truly smart calendar help you?";
+  const mobilePlaceholder = "What would help you?"; // O un'altra versione breve
+
+  function setInputPlaceholder() {
+    if (window.innerWidth <= 767) { // Puoi usare 480 se vuoi il cambio solo su schermi molto piccoli
+      userInputElement.placeholder = mobilePlaceholder;
+    } else {
+      userInputElement.placeholder = originalPlaceholder;
+    }
+  }
 
   function getRandomMessage(messagesArray) {
     return messagesArray[Math.floor(Math.random() * messagesArray.length)];
@@ -150,7 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Imposta lo step iniziale
+  // Imposta lo step iniziale e il placeholder
+  setInputPlaceholder(); // Chiama la funzione per impostare il placeholder iniziale
+  window.addEventListener('resize', setInputPlaceholder); // Aggiorna il placeholder al resize
+
   setActiveStep(inputStep); 
   counterElement.textContent = 0; 
   socket.emit('getInitialCounter');

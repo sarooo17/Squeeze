@@ -81,7 +81,7 @@ body {
   max-width: 1200px; 
   margin: 0 auto;
   padding: 20px; 
-  height: 100%; /* MODIFICATO: Container occupa il 100% dell'altezza del body */
+  height: 100%; 
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Questo distribuirà lo spazio */
@@ -92,8 +92,6 @@ body {
 
 /* Logo */
 .logo {
-  /* margin-top: 20px; // Rimosso per dare più controllo a flexbox */
-  /* margin-bottom: 40px; // Rimosso per dare più controllo a flexbox */
   padding-top: 20px; /* Aggiunto padding per spazio sopra */
 }
 
@@ -120,7 +118,7 @@ h1 {
   font-size: 4rem;
   font-weight: 700;
   color: #4a4a4a;
-  margin-bottom: 20px; /* Ridotto margine */
+  margin-bottom: 25px; /* Aumentato leggermente */
 }
 
 /* Slogan */
@@ -130,7 +128,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px; /* Ridotto margine */
+  margin-bottom: 25px; /* Aumentato leggermente */
 }
 
 .slogan {
@@ -142,7 +140,7 @@ h1 {
 
 /* Counter */
 .counter-container {
-  margin-bottom: 25px; /* Ridotto margine */
+  margin-bottom: 30px; /* Aumentato leggermente */
 }
 
 .counter-text {
@@ -150,12 +148,17 @@ h1 {
   line-height: 1.5;
 }
 
+.highlight {
+  color: #ff8c00;
+  font-weight: 700;
+}
+
 .highlight-counter {
   color: #ffc300;
   font-weight: 700;
   font-size: 1.5rem;
   display: inline-block; 
-  min-width: 55px;      
+  min-width: auto;      
   text-align: right;    
 }
 
@@ -176,7 +179,7 @@ h1 {
 }
 
 .form-with-inline-button input#email-input {
-    padding-right: 140px; 
+    padding-right: auto; 
 }
 
 .form-with-inline-button button[type="submit"] {
@@ -239,21 +242,20 @@ button:hover {
 
 /* Footer */
 .footer {
-  /* padding: 20px; // Rimosso per dare più controllo a flexbox */
-  padding-bottom: 15px; /* Aggiunto padding per spazio sotto */
+  padding-bottom: 15px; 
   text-align: center;
   font-size: 0.875rem;
   color: #777;
-  width: 100%; /* Assicura che occupi la larghezza */
+  width: 100%; 
 }
 
 /* NUOVI STILI PER IL FLUSSO DEL FORM */
 .form-flow-container {
   width: 100%;
   max-width: 700px; 
-  margin: 0 auto 15px auto; /* Ridotto margine inferiore */
+  margin: 0 auto 20px auto; /* Aumentato leggermente il margine inferiore */
   position: relative; 
-  min-height: 70px; /* Ridotta altezza minima */
+  min-height: 70px; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,8 +282,8 @@ button:hover {
   transition: opacity 0.4s ease-in-out, visibility 0s linear 0s;
 }
 
-.feedback-message, /* Già definito sopra, assicurati che sia consistente */
-.thank-you-message { /* Già definito sopra, assicurati che sia consistente */
+.feedback-message, 
+.thank-you-message { 
   font-size: 1.25rem;
   text-align: center; 
   width: 100%; 
@@ -301,69 +303,79 @@ button:hover {
 /* Responsive styles */
 @media (max-width: 767px) { 
   .container {
-    padding: 15px 10px; /* Ridotto padding orizzontale */
+    padding: 15px 10px; 
   }
   
   .content {
-    padding: 5px 10px; /* Ridotto padding */
+    padding: 5px 10px; 
   }
 
   h1 {
-    font-size: 2.8rem; /* Ridotto */
-    margin-bottom: 15px;
+    font-size: 2.8rem; 
+    margin-bottom: 20px; /* Aumentato */
   }
 
   .slogan {
-    font-size: 1.15rem; /* Ridotto */
+    font-size: 1.15rem; 
     line-height: 1.3;
   }
   
   .slogan-container {
     min-height: 35px; 
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* Aumentato */
   }
 
   .counter-text {
-    font-size: 0.9rem; /* Ridotto */
+    font-size: 0.9rem; 
   }
   
   .highlight-counter {
-    font-size: 1.15rem; /* Ridotto */
+    font-size: 1.15rem; 
   }
 
   .counter-container {
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* Aumentato */
   }
 
   .form-flow-container {
     min-height: 60px; 
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Aumentato */
     max-width: 98%; 
+  }
+
+  .form-with-inline-button {
+    flex-direction: column; 
+    position: static; 
   }
 
   .form-with-inline-button input[type="text"],
   .form-with-inline-button input[type="email"] {
-    padding-right: 130px; 
-    font-size: 16px; /* MODIFICATO: Assicura almeno 16px */
-  }
-
-  .form-with-inline-button input#email-input {
-    padding-right: 110px; 
+    padding-right: 20px; 
+    font-size: 16px; 
+    width: 100%; 
+    margin-bottom: 12px; /* Aumentato spazio sotto l'input */
   }
 
   .form-with-inline-button button[type="submit"] {
-    padding: 7px 12px; 
-    font-size: 15px; /* Leggermente più piccolo per il bottone se necessario, ma l'input è la chiave */
+    position: static; 
+    transform: none; 
+    width: 100%; 
+    height: auto; 
+    padding: 12px 20px; 
+    font-size: 15px; 
+    white-space: normal; 
+    line-height: 1.5; 
   }
   
-  input { /* Regola generale per input, assicurati che sia almeno 16px */
-    padding: 10px 15px;
-    font-size: 16px; /* MODIFICATO: Assicura almeno 16px */
+  input { 
+    /* Rimosso margin-top: 16px; dalla regola generale input, gestito da margin-bottom in .form-with-inline-button */
+    padding: 10px 15px; 
+    font-size: 16px; 
   }
 
   button { 
-    padding: 10px 20px;
-    font-size: 15px; /* Leggermente più piccolo per il bottone se necessario */
+    padding: 10px 20px; 
+    font-size: 15px; 
   }
 
   .feedback-message,
@@ -384,12 +396,31 @@ button:hover {
     padding-bottom: 10px;
     font-size: 0.75rem;
   }
+
+  /* Modifiche ai Blob per mobile */
+  .blob-yellow {
+    width: 350px; /* Ridotto */
+    height: 350px; /* Ridotto */
+    top: -10%; /* Posizione in percentuale */
+    left: -20%; /* Posizione in percentuale */
+    filter: blur(60px);
+    animation-duration: 18s;
+  }
+
+  .blob-orange {
+    width: 300px; /* Ridotto */
+    height: 300px; /* Ridotto */
+    bottom: -10%; /* Posizione in percentuale */
+    right: -20%; /* Posizione in percentuale */
+    filter: blur(50px);
+    animation-duration: 15s;
+  }
 }
 
 @media (max-width: 480px) { 
   h1 {
     font-size: 2rem; 
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Aumentato */
   }
 
   .slogan {
@@ -398,38 +429,35 @@ button:hover {
   }
    .slogan-container {
     min-height: 30px; 
-    margin-bottom: 10px;
+    margin-bottom: 15px; /* Aumentato */
   }
 
   .counter-text {
     font-size: 0.8rem;
+    margin-bottom: 32px;
   }
   
   .highlight-counter {
     font-size: 1rem;
-    min-width: 40px;
+    min-width: auto;
   }
    .counter-container {
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* Aumentato */
   }
   
   .form-flow-container {
     min-height: 55px;
-  }
-
-  .form-with-inline-button {
-    flex-direction: column; 
-    position: static; 
+    margin-bottom: 12px; /* Aumentato */
   }
 
   .form-with-inline-button input[type="text"],
   .form-with-inline-button input[type="email"] {
-    font-size: 16px; /* MODIFICATO: Assicura almeno 16px */
-    margin-bottom: 8px;
+    font-size: 16px; 
+    margin-bottom: 10px; /* Aumentato */
   }
   .form-with-inline-button button[type="submit"] {
-    font-size: 15px; /* Leggermente più piccolo per il bottone se necessario */
-    padding: 10px 15px;
+    font-size: 15px; 
+    padding: 10px 15px; 
   }
 
 
@@ -450,16 +478,25 @@ button:hover {
     font-size: 0.7rem;
   }
 
-  .blob-yellow, .blob-orange {
-    /* Potrebbe essere necessario nasconderli se lo spazio è troppo poco */
-    /* display: none; */ 
-    width: 150px;
-    height: 150px;
-    filter: blur(25px);
-    opacity: 0.1;
+  /* Modifiche ai Blob per mobile molto piccolo */
+  .blob-yellow {
+    width: 250px; /* Ulteriormente ridotto */
+    height: 250px; /* Ulteriormente ridotto */
+    top: -5%;
+    left: -15%;
+    filter: blur(40px);
+    opacity: 0.2; /* Leggermente più visibile se più piccoli */
+  }
+
+  .blob-orange {
+    width: 200px; /* Ulteriormente ridotto */
+    height: 200px; /* Ulteriormente ridotto */
+    bottom: -5%;
+    right: -15%;
+    filter: blur(35px);
+    opacity: 0.2; /* Leggermente più visibile se più piccoli */
   }
 }
-
 /* Esistente @media (min-width: 768px) - Assicurati che sia dopo le media query max-width se vuoi che sovrascriva */
 @media (min-width: 768px) {
   h1 {
