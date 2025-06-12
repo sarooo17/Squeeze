@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-sgMail.setDataResidency('EU');
+//sgMail.setDataResidency('EU');
 
 const app = express();
 const server = http.createServer(app);
