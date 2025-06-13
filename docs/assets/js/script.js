@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         finalLogoSvg.classList.add("visible");
         loaderOverlay.classList.add("hidden");
-      }, 800); // Logo finale appare alla fine del volo (durata volo 0.8s)
+      }, 800);
 
       
     }, Math.max(loaderAnimationPathDuration, loaderMinDisplayTime));
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const thankyouStep = document.getElementById("thankyou-step");
 
   const userForm = document.getElementById("user-form");
-  const userInputElement = document.getElementById("user-input"); // Già presente
+  const userInputElement = document.getElementById("user-input");
   const feedbackMessageElement = document.getElementById("feedback-message");
 
   const emailForm = document.getElementById("email-form");
