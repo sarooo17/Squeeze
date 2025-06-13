@@ -95,11 +95,16 @@ async function sendThankYouEmail(userEmail, suggestion) {
             <div class="privilege">
               Sei tra i <b>primi iscritti</b>! Riceverai aggiornamenti esclusivi e potrai provare Squeeze in anteprima.
             </div>
-            <p>Il tuo suggerimento:</p>
+            <p>Il tuo suggerimento per noi:</p>
             <div class="suggestion">
               ${suggestion}
             </div>
-            <p>Il tuo feedback è prezioso per noi: ci aiuterà a costruire un prodotto davvero utile e su misura per te.</p>
+            <p>
+              <b>Grazie davvero!</b> Il tuo contributo non finirà nel dimenticatoio: ogni idea, spunto o desiderio che riceviamo viene letto con attenzione dal nostro team.<br>
+              <br>
+              <span style="color:#ff8c00;font-weight:600;">Squeeze nasce per chi vuole organizzarsi meglio, senza stress e con un tocco di intelligenza in più.</span>  
+              Con il tuo aiuto, potremo costruire una soluzione che risponde davvero alle esigenze di chi la userà ogni giorno.
+            </p>
             <p>Resta sintonizzato, ti aggiorneremo appena Squeeze sarà pronto per il lancio!</p>
             <p>Un caro saluto,<br><b>Il team di Squeeze</b></p>
           </div>
