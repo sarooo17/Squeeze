@@ -387,7 +387,7 @@ button:hover {
   h1 { font-size: 2rem; margin-bottom: 15px; }
   .slogan { font-size: 0.9rem; line-height: 1.2; }
   .slogan-container { min-height: 30px; margin-bottom: 15px; }
-  .counter-text { font-size: 0.8rem; /* margin-bottom: 32px; Rimosso, sembrava un valore anomalo */ }
+  .counter-text { font-size: 0.8rem; margin-bottom: 32px;}
   .highlight-counter { font-size: 1rem; min-width: auto; }
   .counter-container { margin-bottom: 20px; }
   .form-flow-container { min-height: 55px; margin-bottom: 12px; }
