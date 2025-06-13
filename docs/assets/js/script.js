@@ -1,4 +1,38 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const loaderOverlay = document.getElementById("loader-overlay");
+  const loaderLogoContainer = document.querySelector("#loader-overlay .loader-logo-container");
+  const finalLogoSvg = document.getElementById("final-logo-svg");
+
+  if (loaderOverlay && loaderLogoContainer && finalLogoSvg) {
+    setTimeout(() => {
+      loaderOverlay.classList.add("paths-animated");
+    }, 100);
+
+    const loaderAnimationPathDuration = 800 + 300;
+    const loaderMinDisplayTime = 1800;
+
+    setTimeout(() => {
+      const loaderRect = loaderLogoContainer.getBoundingClientRect();
+      const targetRect = finalLogoSvg.getBoundingClientRect();
+
+      const dx = targetRect.left + (targetRect.width / 2) - (loaderRect.left + (loaderRect.width / 2));
+      const dy = targetRect.top + (targetRect.height / 2) - (loaderRect.top + (loaderRect.height / 2));
+      const scaleX = targetRect.width / loaderRect.width;
+      const scaleY = targetRect.height / loaderRect.height;
+      const scale = Math.min(scaleX, scaleY);
+
+      loaderLogoContainer.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+      loaderLogoContainer.classList.add("flying");
+
+      setTimeout(() => {
+        finalLogoSvg.classList.add("visible");
+        loaderOverlay.classList.add("hidden");
+      }, 800); // Logo finale appare alla fine del volo (durata volo 0.8s)
+
+      
+    }, Math.max(loaderAnimationPathDuration, loaderMinDisplayTime));
+  }
+
   const socket = io('https://squeeze-833522296941.europe-west1.run.app'); 
 
   const dynamicSlogan = document.getElementById("dynamic-slogan");

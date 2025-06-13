@@ -6,10 +6,10 @@
 }
 
 html {
-  overflow-x: hidden !important; 
-  overflow-y: hidden !important; /* AGGIUNTO: Impedisce lo scroll verticale a livello radice */
+  overflow-x: hidden;
+  overflow-y: hidden; /* Mantenuto come da tua richiesta */
   width: 100%;
-  height: 100%; /* Assicura che html occupi tutta l'altezza */
+  height: 100%;
 }
 
 body {
@@ -17,11 +17,103 @@ body {
   background-color: #ffffff;
   color: #4a4a4a;
   position: relative;
-  width: 100%; 
-  height: 100%; /* MODIFICATO: Body occupa il 100% dell'altezza di html */
-  overflow-x: hidden !important; 
-  overflow-y: hidden !important; /* AGGIUNTO: Impedisce lo scroll verticale a livello body */
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
+
+/* ---- LOADER STYLES (Approccio con due SVG e VOLO) ---- */
+#loader-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: #fff; /* Sfondo dell'overlay */
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.7s cubic-bezier(.4,0,.2,1) 0.8s, visibility 0s linear 1s;
+}
+
+#loader-overlay.hidden { /* Nasconde completamente l'overlay dopo tutto */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s cubic-bezier(.4,0,.2,1), visibility 0s linear 0.4s;
+}
+
+
+.loader-logo-container {
+  width: 120px;
+  height: 120px;
+  position: relative; /* Necessario per il calcolo corretto di getBoundingClientRect se non è già posizionato */
+  /* Transizioni per l'animazione di "volo" */
+  transition-property: transform, opacity;
+  transition-duration: 0.8s; /* Durata del volo */
+  transition-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045); /* Easing per il volo (easeInBack-like) */
+  will-change: transform, opacity;
+}
+.loader-logo-container.flying {
+  /* La trasformazione (translate e scale) sarà impostata da JS */
+  opacity: 0; /* Il logo del loader svanisce mentre vola */
+  transition-delay: 0.1s; /* Leggero ritardo per l'opacità per vedere l'inizio del movimento */
+}
+
+
+#loader-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Animazione dei path INTERNI all'SVG del LOADER */
+#loader-svg #loader-orange-piece,
+#loader-svg #loader-yellow-piece {
+  opacity: 0;
+  transform-origin: 50% 50%;
+  transition-property: opacity, transform;
+  transition-duration: 0.8s;
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+#loader-svg #loader-orange-piece {
+  transform: translateX(-50px) rotate(-90deg) scale(0.5);
+}
+#loader-svg #loader-yellow-piece {
+  transform: translateX(50px) rotate(90deg) scale(0.5);
+}
+
+/* Quando i path del loader sono "animati" (classe aggiunta da JS a #loader-overlay) */
+#loader-overlay.paths-animated .loader-logo-container #loader-svg #loader-orange-piece {
+  opacity: 1;
+  transform: translateX(0) rotate(0deg) scale(1);
+  transition-delay: 0.1s;
+}
+#loader-overlay.paths-animated .loader-logo-container #loader-svg #loader-yellow-piece {
+  opacity: 1;
+  transform: translateX(0) rotate(0deg) scale(1);
+  transition-delay: 0.3s;
+}
+/* ---- FINE LOADER STYLES ---- */
+
+
+/* ---- LOGO FINALE NELLA PAGINA ---- */
+.logo {
+  padding-top: 20px;
+  text-align: center;
+}
+.logo svg#final-logo-svg {
+  width: 40px;
+  height: 40px;
+  opacity: 0; /* Inizia nascosto */
+  transition: opacity 0.5s ease-in-out; /* Transizione per il fade-in */
+  /* Non aggiungere delay qui, il JS lo gestirà */
+}
+.logo svg#final-logo-svg.visible {
+  opacity: 1;
+}
+/* ---- FINE LOGO FINALE ---- */
+
 
 /* Blob animations */
 .blob {
@@ -36,111 +128,88 @@ body {
   width: 600px;
   height: 600px;
   background-color: #ffc300;
-  top: -150px; 
-  left: -150px; 
-  animation: move-blob-1 15s infinite alternate ease-in-out; 
+  top: -150px;
+  left: -150px;
+  animation: move-blob-1 15s infinite alternate ease-in-out;
 }
 
 .blob-orange {
   width: 500px;
   height: 500px;
   background-color: #ff8c00;
-  bottom: -150px; 
-  right: -150px; 
-  animation: move-blob-2 12s infinite alternate ease-in-out; 
+  bottom: -150px;
+  right: -150px;
+  animation: move-blob-2 12s infinite alternate ease-in-out;
 }
 
 @keyframes move-blob-1 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(180px, 120px) scale(1.15); 
-  }
-  100% {
-    transform: translate(40px, -70px) scale(0.85); 
-  }
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(180px, 120px) scale(1.15); }
+  100% { transform: translate(40px, -70px) scale(0.85); }
 }
 
 @keyframes move-blob-2 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-150px, -110px) scale(1.1); 
-  }
-  100% {
-    transform: translate(-30px, 80px) scale(0.9); 
-  }
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-150px, -110px) scale(1.1); }
+  100% { transform: translate(-30px, 80px) scale(0.9); }
 }
-
 
 /* Container */
 .container {
   width: 100%;
-  max-width: 1200px; 
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px; 
-  height: 100%; 
+  padding: 20px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Questo distribuirà lo spazio */
+  justify-content: space-between;
   align-items: center;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
 }
 
-/* Logo */
-.logo {
-  padding-top: 20px; /* Aggiunto padding per spazio sopra */
-}
-
-.logo img {
-  width: 40px;
-  height: 40px;
-}
-
 /* Content */
 .content {
   text-align: center;
-  max-width: 800px; 
-  width: 100%; 
-  padding: 10px 20px; /* Ridotto padding verticale per risparmiare spazio */
-  flex-grow: 1; /* Permette al contenuto di prendere lo spazio verticale disponibile */
+  max-width: 800px;
+  width: 100%;
+  padding: 10px 20px;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Centra il contenuto verticalmente all'interno dello spazio assegnato */
+  justify-content: center;
   align-items: center;
-  overflow: hidden; /* Se il contenuto interno dovesse comunque eccedere, viene tagliato */
+  overflow: hidden;
 }
 
 h1 {
   font-size: 4rem;
   font-weight: 700;
   color: #4a4a4a;
-  margin-bottom: 25px; /* Aumentato leggermente */
+  margin-bottom: 25px;
 }
 
 /* Slogan */
 .slogan-container {
-  height: auto; /* Altezza automatica basata sul contenuto */
-  min-height: 50px; /* Altezza minima per evitare collassi */
+  height: auto;
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 25px; /* Aumentato leggermente */
+  margin-bottom: 25px;
 }
 
 .slogan {
   font-size: 1.5rem;
-  line-height: 1.4; /* Leggermente ridotto */
+  line-height: 1.4;
   opacity: 1;
   transition: opacity 0.5s ease;
 }
 
 /* Counter */
 .counter-container {
-  margin-bottom: 30px; /* Aumentato leggermente */
+  margin-bottom: 30px;
 }
 
 .counter-text {
@@ -157,45 +226,44 @@ h1 {
   color: #ffc300;
   font-weight: 700;
   font-size: 1.5rem;
-  display: inline-block; 
-  min-width: auto;      
-  text-align: right;    
+  display: inline-block;
+  min-width: auto;
+  text-align: right;
 }
-
 
 /* Input form STYLES */
 .form-with-inline-button {
-  position: relative; 
-  display: flex; 
-  width: 100%; 
-  max-width: 600px; 
-  margin: 0 auto; 
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .form-with-inline-button input[type="text"],
 .form-with-inline-button input[type="email"] {
-  flex-grow: 1; 
-  padding-right: 175px; 
+  flex-grow: 1;
+  padding-right: 175px;
 }
 
 .form-with-inline-button input#email-input {
-    padding-right: auto; 
+    padding-right: auto; /* Questo potrebbe non avere l'effetto desiderato, padding-right di solito prende un valore fisso */
 }
 
 .form-with-inline-button button[type="submit"] {
   position: absolute;
   top: 50%;
-  right: 6px; 
+  right: 6px;
   transform: translateY(-50%);
-  padding: 10px 18px; 
-  border-radius: 16px; 
-  white-space: nowrap; 
-  height: calc(100% - 12px); 
-  line-height: normal; 
+  padding: 10px 18px;
+  border-radius: 16px;
+  white-space: nowrap;
+  height: calc(100% - 12px);
+  line-height: normal;
 }
 
 input {
-  padding: 15px 20px; 
+  padding: 15px 20px;
   border-radius: 20px;
   border: 1px solid #ffc300;
   font-family: "Outfit", sans-serif;
@@ -226,7 +294,6 @@ button:hover {
   background-color: #e67e00;
 }
 
-
 /* Feedback message */
 .feedback-message {
   margin-bottom: 20px;
@@ -239,39 +306,38 @@ button:hover {
   color: #4a4a4a;
 }
 
-
 /* Footer */
 .footer {
-  padding-bottom: 15px; 
+  padding-bottom: 15px;
   text-align: center;
   font-size: 0.875rem;
   color: #777;
-  width: 100%; 
+  width: 100%;
 }
 
 /* NUOVI STILI PER IL FLUSSO DEL FORM */
 .form-flow-container {
   width: 100%;
-  max-width: 700px; 
-  margin: 0 auto 20px auto; /* Aumentato leggermente il margine inferiore */
-  position: relative; 
-  min-height: 70px; 
+  max-width: 700px;
+  margin: 0 auto 20px auto;
+  position: relative;
+  min-height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .form-step {
-  position: absolute; 
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%; 
-  padding: 0 10px; 
+  width: 100%;
+  padding: 0 10px;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.4s ease-in-out, visibility 0s linear 0.4s;
-  display: flex; 
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -280,13 +346,6 @@ button:hover {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.4s ease-in-out, visibility 0s linear 0s;
-}
-
-.feedback-message, 
-.thank-you-message { 
-  font-size: 1.25rem;
-  text-align: center; 
-  width: 100%; 
 }
 
 /* Frosted glass effect */
@@ -299,211 +358,51 @@ button:hover {
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-
 /* Responsive styles */
-@media (max-width: 767px) { 
-  .container {
-    padding: 15px 10px; 
-  }
-  
-  .content {
-    padding: 5px 10px; 
-  }
-
-  h1 {
-    font-size: 2.8rem; 
-    margin-bottom: 20px; /* Aumentato */
-  }
-
-  .slogan {
-    font-size: 1.15rem; 
-    line-height: 1.3;
-  }
-  
-  .slogan-container {
-    min-height: 35px; 
-    margin-bottom: 20px; /* Aumentato */
-  }
-
-  .counter-text {
-    font-size: 0.9rem; 
-  }
-  
-  .highlight-counter {
-    font-size: 1.15rem; 
-  }
-
-  .counter-container {
-    margin-bottom: 25px; /* Aumentato */
-  }
-
-  .form-flow-container {
-    min-height: 60px; 
-    margin-bottom: 15px; /* Aumentato */
-    max-width: 98%; 
-  }
-
-  .form-with-inline-button {
-    flex-direction: column; 
-    position: static; 
-  }
-
+@media (max-width: 767px) {
+  .container { padding: 15px 10px; }
+  .content { padding: 5px 10px; }
+  h1 { font-size: 2.8rem; margin-bottom: 20px; }
+  .slogan { font-size: 1.15rem; line-height: 1.3; }
+  .slogan-container { min-height: 35px; margin-bottom: 20px; }
+  .counter-text { font-size: 0.9rem; }
+  .highlight-counter { font-size: 1.15rem; }
+  .counter-container { margin-bottom: 25px; }
+  .form-flow-container { min-height: 60px; margin-bottom: 15px; max-width: 98%; }
+  .form-with-inline-button { flex-direction: column; position: static; }
   .form-with-inline-button input[type="text"],
-  .form-with-inline-button input[type="email"] {
-    padding-right: 20px; 
-    font-size: 16px; 
-    width: 100%; 
-    margin-bottom: 12px; /* Aumentato spazio sotto l'input */
-  }
-
-  .form-with-inline-button button[type="submit"] {
-    position: static; 
-    transform: none; 
-    width: 100%; 
-    height: auto; 
-    padding: 12px 20px; 
-    font-size: 15px; 
-    white-space: normal; 
-    line-height: 1.5; 
-  }
-  
-  input { 
-    /* Rimosso margin-top: 16px; dalla regola generale input, gestito da margin-bottom in .form-with-inline-button */
-    padding: 10px 15px; 
-    font-size: 16px; 
-  }
-
-  button { 
-    padding: 10px 20px; 
-    font-size: 15px; 
-  }
-
-  .feedback-message,
-  .thank-you-message {
-    font-size: 1rem; 
-  }
-
-  .logo {
-    padding-top: 15px;
-  }
-
-  .logo img {
-    width: 30px;
-    height: 30px;
-  }
-
-  .footer {
-    padding-bottom: 10px;
-    font-size: 0.75rem;
-  }
-
-  /* Modifiche ai Blob per mobile */
-  .blob-yellow {
-    width: 350px; /* Ridotto */
-    height: 350px; /* Ridotto */
-    top: -10%; /* Posizione in percentuale */
-    left: -20%; /* Posizione in percentuale */
-    filter: blur(60px);
-    animation-duration: 18s;
-  }
-
-  .blob-orange {
-    width: 300px; /* Ridotto */
-    height: 300px; /* Ridotto */
-    bottom: -10%; /* Posizione in percentuale */
-    right: -20%; /* Posizione in percentuale */
-    filter: blur(50px);
-    animation-duration: 15s;
-  }
+  .form-with-inline-button input[type="email"] { padding-right: 20px; font-size: 16px; width: 100%; margin-bottom: 12px; }
+  .form-with-inline-button button[type="submit"] { position: static; transform: none; width: 100%; height: auto; padding: 12px 20px; font-size: 15px; white-space: normal; line-height: 1.5; }
+  input { padding: 10px 15px; font-size: 16px; }
+  button { padding: 10px 20px; font-size: 15px; }
+  .feedback-message, .thank-you-message { font-size: 1rem; }
+  .logo { padding-top: 15px; }
+  /* .logo img { width: 30px; height: 30px; } Rimosso perché usiamo SVG */
+  .footer { padding-bottom: 10px; font-size: 0.75rem; }
+  .blob-yellow { width: 350px; height: 350px; top: -10%; left: -20%; filter: blur(60px); animation-duration: 18s; }
+  .blob-orange { width: 300px; height: 300px; bottom: -10%; right: -20%; filter: blur(50px); animation-duration: 15s; }
 }
 
-@media (max-width: 480px) { 
-  h1 {
-    font-size: 2rem; 
-    margin-bottom: 15px; /* Aumentato */
-  }
-
-  .slogan {
-    font-size: 0.9rem; 
-    line-height: 1.2;
-  }
-   .slogan-container {
-    min-height: 30px; 
-    margin-bottom: 15px; /* Aumentato */
-  }
-
-  .counter-text {
-    font-size: 0.8rem;
-    margin-bottom: 32px;
-  }
-  
-  .highlight-counter {
-    font-size: 1rem;
-    min-width: auto;
-  }
-   .counter-container {
-    margin-bottom: 20px; /* Aumentato */
-  }
-  
-  .form-flow-container {
-    min-height: 55px;
-    margin-bottom: 12px; /* Aumentato */
-  }
-
+@media (max-width: 480px) {
+  h1 { font-size: 2rem; margin-bottom: 15px; }
+  .slogan { font-size: 0.9rem; line-height: 1.2; }
+  .slogan-container { min-height: 30px; margin-bottom: 15px; }
+  .counter-text { font-size: 0.8rem; /* margin-bottom: 32px; Rimosso, sembrava un valore anomalo */ }
+  .highlight-counter { font-size: 1rem; min-width: auto; }
+  .counter-container { margin-bottom: 20px; }
+  .form-flow-container { min-height: 55px; margin-bottom: 12px; }
   .form-with-inline-button input[type="text"],
-  .form-with-inline-button input[type="email"] {
-    font-size: 16px; 
-    margin-bottom: 10px; /* Aumentato */
-  }
-  .form-with-inline-button button[type="submit"] {
-    font-size: 15px; 
-    padding: 10px 15px; 
-  }
-
-
-  .feedback-message,
-  .thank-you-message {
-    font-size: 0.9rem;
-  }
-
-  .logo {
-    padding-top: 10px;
-  }
-   .logo img {
-    width: 28px;
-    height: 28px;
-  }
-  .footer {
-    padding-bottom: 8px;
-    font-size: 0.7rem;
-  }
-
-  /* Modifiche ai Blob per mobile molto piccolo */
-  .blob-yellow {
-    width: 250px; /* Ulteriormente ridotto */
-    height: 250px; /* Ulteriormente ridotto */
-    top: -5%;
-    left: -15%;
-    filter: blur(40px);
-    opacity: 0.2; /* Leggermente più visibile se più piccoli */
-  }
-
-  .blob-orange {
-    width: 200px; /* Ulteriormente ridotto */
-    height: 200px; /* Ulteriormente ridotto */
-    bottom: -5%;
-    right: -15%;
-    filter: blur(35px);
-    opacity: 0.2; /* Leggermente più visibile se più piccoli */
-  }
+  .form-with-inline-button input[type="email"] { font-size: 16px; margin-bottom: 10px; }
+  .form-with-inline-button button[type="submit"] { font-size: 15px; padding: 10px 15px; }
+  .feedback-message, .thank-you-message { font-size: 0.9rem; }
+  .logo { padding-top: 10px; }
+  /* .logo img { width: 28px; height: 28px; } Rimosso perché usiamo SVG */
+  .footer { padding-bottom: 8px; font-size: 0.7rem; }
+  .blob-yellow { width: 250px; height: 250px; top: -5%; left: -15%; filter: blur(40px); opacity: 0.2; }
+  .blob-orange { width: 200px; height: 200px; bottom: -5%; right: -15%; filter: blur(35px); opacity: 0.2; }
 }
-/* Esistente @media (min-width: 768px) - Assicurati che sia dopo le media query max-width se vuoi che sovrascriva */
+
 @media (min-width: 768px) {
-  h1 {
-    font-size: 5rem;
-  }
-
-  .slogan {
-    font-size: 1.75rem;
-  }
+  h1 { font-size: 5rem; }
+  .slogan { font-size: 1.75rem; }
 }
