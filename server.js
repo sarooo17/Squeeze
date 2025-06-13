@@ -6,7 +6,6 @@ const socketIo = require('socket.io');
 const mongoose = require('mongoose'); // <--- aggiunto
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-//sgMail.setDataResidency('EU');
 
 const app = express();
 const server = http.createServer(app);
@@ -44,156 +43,79 @@ const Suggestion = mongoose.model('Suggestion', suggestionSchema);
 async function sendThankYouEmail(userEmail, suggestion) {
   const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png';
 
-  const emailTextVariations = [
-    {
-      greeting: "Hello there,",
-      intro: "We're genuinely excited to have you on the waitlist for Squeeze Calendar. Your input is incredibly valuable as we craft a calendar experience designed to help you <span class=\"squeeze-emphasis\">breathe</span>.",
-      acknowledgement: "You suggested:",
-      postSuggestion: "We're pouring our energy into making Squeeze a reality, and your feedback is a key ingredient.",
-      closing: "Stay organized, stay inspired!",
-      signOff: "Warmly,"
-    },
-    {
-      greeting: "Hi!",
-      intro: "A big thank you for joining the Squeeze Calendar waitlist! We're thrilled to have your support and especially appreciate you sharing your thoughts. It helps us build a calendar that truly makes a difference.",
-      acknowledgement: "Your idea was:",
-      postSuggestion: "We're hard at work on Squeeze, and insights like yours are lighting the way.",
-      closing: "Looking forward to launching soon!",
-      signOff: "Best,"
-    },
-    {
-      greeting: "Hey there,",
-      intro: "Welcome to the Squeeze community! Thanks for signing up and for taking the time to send us your suggestion. We're building Squeeze to help you find more <span class=\"squeeze-emphasis\">calm</span> in your schedule.",
-      acknowledgement: "We've noted your suggestion:",
-      postSuggestion: "Every piece of feedback, like yours, helps us get closer to that goal.",
-      closing: "Keep an eye out for updates!",
-      signOff: "Cheers,"
-    },
-    {
-      greeting: "Greetings!",
-      intro: "It's great to have you on the Squeeze Calendar waitlist! We're so grateful you've shared your perspective with us – it's vital for creating a tool that genuinely helps people <span class=\"squeeze-emphasis\">focus</span> on what matters.",
-      acknowledgement: "Regarding your suggestion:",
-      postSuggestion: "Your input is now part of our development journey as we build Squeeze.",
-      closing: "We're excited for what's to come!",
-      signOff: "Sincerely,"
-    }
-  ];
-
-  const selectedText = emailTextVariations[Math.floor(Math.random() * emailTextVariations.length)];
-
   const msg = {
     to: userEmail,
-    from: process.env.EMAIL_FROM, // <-- solo stringa!
-    subject: 'Welcome to the Squeeze Calendar Waitlist! ✨',
+    from: process.env.EMAIL_FROM,
+    subject: 'Benvenuto nella lista d’attesa di Squeeze Calendar! 🎉',
     html: `
       <!DOCTYPE html>
-      <html lang="en">
+      <html lang="it">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
         <style>
-          body {
-            font-family: 'Outfit', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f6f8; 
-            color: #4a4a4a;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-          }
-          .email-wrapper {
-            padding: 20px;
-          }
-          .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff; 
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.07);
-          }
-          .email-logo-section {
-            padding: 30px 20px 20px 20px;
-            text-align: center;
-          }
-          .email-logo-section img {
-            max-width: 45px; 
-            height: auto;
-          }
-          .email-body {
-            padding: 0px 35px 30px 35px;
-            line-height: 1.65;
-            font-size: 16px;
-          }
-          .email-title {
-            color: #ff8c00; 
-            font-size: 26px;
-            font-weight: 700;
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 25px;
-          }
-          .email-body p {
-            margin-bottom: 18px;
-          }
-          .suggestion-quote {
-            background-color: #fff9e6; 
-            border-left: 4px solid #ffc300; 
-            padding: 15px 20px;
-            margin: 25px 0;
-            font-style: italic;
-            color: #5c5c5c;
-          }
-          .highlight-text {
-            color: #ff8c00; 
-            font-weight: 600;
-          }
-          .email-footer {
-            text-align: center;
-            padding: 25px 20px;
-            background-color: #f8f9fa; 
-            font-size: 12px;
-            color: #777777;
-            border-top: 1px solid #eeeeee;
-          }
-          .email-footer a {
-            color: #ff8c00; 
-            text-decoration: none;
-            font-weight: 500;
-          }
-          .brand-font {
-             font-family: 'Outfit', Arial, sans-serif;
-          }
-          .squeeze-emphasis {
-            color: #ff8c00; 
-            font-weight: 700; 
-          }
+          body { font-family: 'Outfit', Arial, sans-serif; background: #f4f6f8; color: #333; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 30px auto; background: #fff; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.07); overflow: hidden; }
+          .header { text-align: center; padding: 32px 20px 18px 20px; }
+          .header img { max-width: 48px; }
+          .title { color: #ff8c00; font-size: 2rem; font-weight: 700; margin: 18px 0 8px 0; }
+          .subtitle { color: #333; font-size: 1.1rem; margin-bottom: 18px; }
+          .section { padding: 0 32px 24px 32px; }
+          .features { background: #fff9e6; border-radius: 10px; padding: 18px 20px; margin: 18px 0; }
+          .features ul { padding-left: 18px; }
+          .features li { margin-bottom: 8px; }
+          .highlight { color: #ff8c00; font-weight: 600; }
+          .suggestion { margin: 18px 0; font-style: italic; color: #555; background: #f8f9fa; border-left: 4px solid #ff8c00; padding: 10px 18px; border-radius: 6px; }
+          .privilege { background: #eafbe7; color: #1b7f3a; border-radius: 8px; padding: 14px 18px; margin: 18px 0; font-weight: 600; }
+          .footer { text-align: center; font-size: 12px; color: #888; padding: 18px 20px; background: #f8f9fa; border-top: 1px solid #eee; }
+          @media (max-width: 600px) { .container, .section { padding: 10px !important; } }
         </style>
       </head>
       <body>
-        <div class="email-wrapper">
-          <div class="email-container">
-            <div class="email-logo-section">
-              <img src="${logoUrl}" alt="Squeeze Calendar Logo">
+        <div class="container">
+          <div class="header">
+            <img src="${logoUrl}" alt="Squeeze Calendar Logo">
+            <div class="title">Ci sei anche tu 🎉</div>
+            <div class="subtitle">Benvenuto tra i pionieri di <span class="highlight">Squeeze Calendar</span></div>
+          </div>
+          <div class="section">
+            <p>Ciao,</p>
+            <p>Siamo entusiasti di averti tra i primi a scoprire <b>Squeeze</b>, il calendario intelligente che sfrutta l’<span class="highlight">Intelligenza Artificiale</span> per aiutarti a organizzare meglio il tuo tempo e ridurre lo stress.</p>
+            <div class="features">
+              <b>Le funzionalità principali di Squeeze:</b>
+              <ul>
+                <li>✨ <b>Organizzazione automatica</b> degli eventi e delle priorità</li>
+                <li>🤖 <b>Suggerimenti smart</b> per ottimizzare la tua giornata</li>
+                <li>🔔 <b>Promemoria intelligenti</b> e personalizzati</li>
+                <li>📊 <b>Statistiche</b> e consigli per migliorare la tua produttività</li>
+                <li>🌙 <b>Modalità relax</b> per trovare il giusto equilibrio</li>
+              </ul>
             </div>
-            <div class="email-body">
-              <h1 class="email-title brand-font">Thanks for joining Squeeze!</h1>
-              <p class="brand-font">${selectedText.greeting}</p>
-              <p class="brand-font">${selectedText.intro}</p>
-              <p class="brand-font">${selectedText.acknowledgement}</p>
-              <div class="suggestion-quote brand-font">
-                ${suggestion}
-              </div>
-              <p class="brand-font">${selectedText.postSuggestion}</p>
-              <p class="brand-font">We'll reach out to you at <strong class="highlight-text">${userEmail}</strong> the moment we're ready to launch.</p>
-              <p class="brand-font">${selectedText.closing}</p>
-              <p class="brand-font">${selectedText.signOff}<br><strong class="brand-font">The Squeeze Team</strong></p>
+            <div class="privilege">
+              Sei tra i <b>primi iscritti</b>! Riceverai aggiornamenti esclusivi e potrai provare Squeeze in anteprima.
             </div>
-            <div class="email-footer brand-font">
-              <p>&copy; ${new Date().getFullYear()} Squeeze. All rights reserved.</p>
-              <p>You're receiving this because you signed up on <a href="https://www.squeeze-it.com/">squeeze-it.com</a>.</p>
+            <p>Il tuo suggerimento:</p>
+            <div class="suggestion">
+              ${suggestion}
             </div>
+            <p>Il tuo feedback è prezioso per noi: ci aiuterà a costruire un prodotto davvero utile e su misura per te.</p>
+            <p>Resta sintonizzato, ti aggiorneremo appena Squeeze sarà pronto per il lancio!</p>
+            <p>Un caro saluto,<br><b>Il team di Squeeze</b></p>
+          </div>
+          <div class="section">
+            <h3 style="font-size: 1.1rem; margin-bottom: 12px; color: #ff8c00;">Chi c’è dietro Squeeze?</h3>
+            <p>
+              Siamo un piccolo team italiano con un grande obiettivo: aiutare le persone a organizzare meglio il proprio tempo, con l’aiuto dell’AI, ma senza complicazioni.  
+              Abbiamo creato Squeeze perché anche noi ci siamo sentiti sopraffatti da calendari, notifiche e to-do sparsi ovunque.
+            </p>
+            <p>
+              Crediamo in strumenti semplici, intelligenti e umani.  
+              E vogliamo costruirli insieme a chi li userà davvero: <b>tu</b>.
+            </p>
+          </div>
+          <div class="footer">
+            &copy; ${new Date().getFullYear()} Squeeze. Ricevi questa email perché ti sei iscritto su <a href="https://www.squeeze-it.com/">squeeze-it.com</a>.
           </div>
         </div>
       </body>
