@@ -3,15 +3,54 @@ document.addEventListener("DOMContentLoaded", () => {
   const loaderLogoContainer = document.querySelector("#loader-overlay .loader-logo-container");
   const finalLogoSvg = document.getElementById("final-logo-svg");
 
+  // Variabili per il resto dello script
+  const socket = io('https://squeeze-833522296941.europe-west1.run.app');
+  const dynamicSlogan = document.getElementById("dynamic-slogan");
+  const counterElement = document.getElementById("counter");
+  const formFlowContainer = document.getElementById("form-flow-container");
+  const inputStep = document.getElementById("input-step");
+  const feedbackStep = document.getElementById("feedback-step");
+  const emailStep = document.getElementById("email-step");
+  const thankyouStep = document.getElementById("thankyou-step");
+  const userForm = document.getElementById("user-form");
+  const userInputElement = document.getElementById("user-input");
+  const feedbackMessageElement = document.getElementById("feedback-message");
+  const emailForm = document.getElementById("email-form");
+  const emailInputElement = document.getElementById("email-input");
+  const dynamicThankYouMessageElement = document.getElementById("dynamic-thank-you-message");
+
+  const slogans = [
+    'The calendar that knows you. And lets you <span class="highlight">breathe</span>.',
+    'An extra mind to organize <span class="highlight">yours</span>.',
+    'Every hour in its <span class="highlight">right</span> place.',
+    'Organized without <span class="highlight">anxiety</span>.',
+  ];
+  const feedbackMessages = [
+    "Great idea! We're on it 💪", "Thanks for the input! We're working hard 🚀", "Awesome suggestion! Let's build it ✨",
+    "Noted! We're making Squeeze better for you 👍", "Love it! We're cooking something special 🧑‍🍳"
+  ];
+  const thankYouMessages = [
+    "Thank you! We'll notify you at launch 🚀", "You're all set! We'll be in touch soon ✨", "Thanks for joining! Get ready for Squeeze 👍",
+    "Awesome! We'll send you an update when we launch 📧", "Got it! We'll let you know when Squeeze is live 🎉"
+  ];
+  let currentSloganIndex = 0;
+  let initialAnimationDone = false;
+  let userSuggestion = "";
+  const originalPlaceholder = "How could a truly smart calendar help you?";
+  const mobilePlaceholder = "What would help you?";
+
+  // --- INIZIO LOGICA LOADER ---
   if (loaderOverlay && loaderLogoContainer && finalLogoSvg) {
     setTimeout(() => {
       loaderOverlay.classList.add("paths-animated");
     }, 100);
 
-    const loaderAnimationPathDuration = 800 + 300;
-    const loaderMinDisplayTime = 1800;
+    const loaderAnimationPathDuration = 800 + 300; // 1100ms
+    const loaderMinDisplayTime = 1800; // Tempo che il loader resta visibile dopo l'animazione dei path
 
-    setTimeout(() => {
+    const timeUntilFlight = Math.max(loaderAnimationPathDuration, loaderMinDisplayTime); // Es: 1800ms
+
+    setTimeout(() => { // Timeout per iniziare il "volo"
       const loaderRect = loaderLogoContainer.getBoundingClientRect();
       const targetRect = finalLogoSvg.getBoundingClientRect();
 
@@ -22,64 +61,46 @@ document.addEventListener("DOMContentLoaded", () => {
       const scale = Math.min(scaleX, scaleY);
 
       loaderLogoContainer.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      loaderLogoContainer.classList.add("flying");
+      loaderLogoContainer.classList.add("flying"); // Durata transizione "flying" è 0.8s (800ms)
 
+      // Timeout per far apparire il logo finale e nascondere l'overlay
+      // Questo avviene alla fine dell'animazione di "volo"
       setTimeout(() => {
         finalLogoSvg.classList.add("visible");
-        loaderOverlay.classList.add("hidden");
-      }, 800);
+        loaderOverlay.classList.add("hidden"); // Durata transizione "hidden" è 0.4s (400ms)
 
-      
-    }, Math.max(loaderAnimationPathDuration, loaderMinDisplayTime));
+        // --- PUNTO CHIAVE: FINE ANIMAZIONE LOADER ---
+        // Ora che l'overlay è nascosto e il logo finale è visibile,
+        // possiamo far partire il resto delle inizializzazioni della pagina.
+        
+        // Imposta lo step iniziale del form e il placeholder
+        setInputPlaceholder();
+        window.addEventListener('resize', setInputPlaceholder);
+        setActiveStep(inputStep);
+        
+        // Inizializza il testo del contatore a 0
+        counterElement.textContent = 0;
+        
+        // Richiedi il valore iniziale del contatore al server
+        // Questo triggererà l'animazione del contatore.
+        socket.emit('getInitialCounter');
+
+      }, 800); // Corrisponde alla durata dell'animazione "flying"
+
+    }, timeUntilFlight);
+  } else {
+    // Fallback se il loader non esiste: inizializza subito la pagina
+    setInputPlaceholder();
+    window.addEventListener('resize', setInputPlaceholder);
+    setActiveStep(inputStep);
+    counterElement.textContent = 0;
+    socket.emit('getInitialCounter');
   }
+  // --- FINE LOGICA LOADER ---
 
-  const socket = io('https://squeeze-833522296941.europe-west1.run.app'); 
-
-  const dynamicSlogan = document.getElementById("dynamic-slogan");
-  const counterElement = document.getElementById("counter");
-  
-  const formFlowContainer = document.getElementById("form-flow-container");
-  const inputStep = document.getElementById("input-step");
-  const feedbackStep = document.getElementById("feedback-step");
-  const emailStep = document.getElementById("email-step");
-  const thankyouStep = document.getElementById("thankyou-step");
-
-  const userForm = document.getElementById("user-form");
-  const userInputElement = document.getElementById("user-input");
-  const feedbackMessageElement = document.getElementById("feedback-message");
-
-  const emailForm = document.getElementById("email-form");
-  const emailInputElement = document.getElementById("email-input");
-  
-  const dynamicThankYouMessageElement = document.getElementById("dynamic-thank-you-message");
-
-  const slogans = [
-    'The calendar that knows you. And lets you <span class="highlight">breathe</span>.',
-    'An extra mind to organize <span class="highlight">yours</span>.',
-    'Every hour in its <span class="highlight">right</span> place.',
-    'Organized without <span class="highlight">anxiety</span>.',
-  ];
-
-  const feedbackMessages = [
-    "Great idea! We're on it 💪", "Thanks for the input! We're working hard 🚀", "Awesome suggestion! Let's build it ✨",
-    "Noted! We're making Squeeze better for you 👍", "Love it! We're cooking something special 🧑‍🍳"
-  ];
-
-  const thankYouMessages = [
-    "Thank you! We'll notify you at launch 🚀", "You're all set! We'll be in touch soon ✨", "Thanks for joining! Get ready for Squeeze 👍",
-    "Awesome! We'll send you an update when we launch 📧", "Got it! We'll let you know when Squeeze is live 🎉"
-  ];
-
-  let currentSloganIndex = 0;
-  let initialAnimationDone = false; 
-  let userSuggestion = ""; 
-
-  // Placeholder originali e per mobile
-  const originalPlaceholder = "How could a truly smart calendar help you?";
-  const mobilePlaceholder = "What would help you?"; // O un'altra versione breve
 
   function setInputPlaceholder() {
-    if (window.innerWidth <= 767) { // Puoi usare 480 se vuoi il cambio solo su schermi molto piccoli
+    if (window.innerWidth <= 767) {
       userInputElement.placeholder = mobilePlaceholder;
     } else {
       userInputElement.placeholder = originalPlaceholder;
@@ -102,8 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function animateCounterTo(targetCount) {
     let currentAnimatedValue = 0;
-    counterElement.textContent = currentAnimatedValue; 
-    const animationDuration = 1500; 
+    counterElement.textContent = currentAnimatedValue;
+    const animationDuration = 1500;
     let startTime = null;
 
     function animationStep(timestamp) {
@@ -115,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentAnimatedValue < value) {
         currentAnimatedValue = value;
         counterElement.textContent = currentAnimatedValue;
-      } else if (currentAnimatedValue > targetCount) { 
+      } else if (currentAnimatedValue > targetCount) {
         currentAnimatedValue = targetCount;
         counterElement.textContent = currentAnimatedValue;
       }
@@ -123,20 +144,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentAnimatedValue < targetCount) {
         requestAnimationFrame(animationStep);
       } else {
-        counterElement.textContent = targetCount; 
-        initialAnimationDone = true; 
+        counterElement.textContent = targetCount;
+        initialAnimationDone = true;
       }
     }
     requestAnimationFrame(animationStep);
   }
 
-  // Funzione per cambiare lo step attivo
   function setActiveStep(activeStepElement) {
-    // Nasconde tutti gli step
     [inputStep, feedbackStep, emailStep, thankyouStep].forEach(step => {
       step.classList.remove("active-step");
     });
-    // Mostra lo step desiderato
     if (activeStepElement) {
       activeStepElement.classList.add("active-step");
     }
@@ -144,40 +162,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   userForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    userSuggestion = userInputElement.value; 
+    userSuggestion = userInputElement.value;
     if (userSuggestion.trim() !== "") {
-      setActiveStep(null); // Nasconde lo step corrente (input-form)
-      
-      setTimeout(() => { // Permette alla transizione di uscita di completarsi
-        feedbackMessageElement.textContent = getRandomMessage(feedbackMessages);
-        setActiveStep(feedbackStep); // Mostra lo step del feedback
-      }, 400); // Durata della transizione CSS (opacity)
-
+      setActiveStep(null);
       setTimeout(() => {
-        setActiveStep(null); // Nasconde lo step del feedback
-        setTimeout(() => { // Permette alla transizione di uscita di completarsi
-            setActiveStep(emailStep); // Mostra lo step dell'email form
+        feedbackMessageElement.textContent = getRandomMessage(feedbackMessages);
+        setActiveStep(feedbackStep);
+      }, 400);
+      setTimeout(() => {
+        setActiveStep(null);
+        setTimeout(() => {
+            setActiveStep(emailStep);
         }, 400);
-      }, 2500 + 400); // Durata del feedback (2.5s) + durata transizione
+      }, 2500 + 400);
     }
   });
 
   emailForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const emailInput = emailInputElement.value;
-    if (emailInput.trim() !== "" && userSuggestion.trim() !== "") { 
-      socket.emit('newEmail', { email: emailInput, suggestion: userSuggestion }); 
-      
-      setActiveStep(null); // Nasconde lo step corrente (email-form)
-
-      setTimeout(() => { // Permette alla transizione di uscita di completarsi
+    if (emailInput.trim() !== "" && userSuggestion.trim() !== "") {
+      socket.emit('newEmail', { email: emailInput, suggestion: userSuggestion });
+      setActiveStep(null);
+      setTimeout(() => {
         dynamicThankYouMessageElement.textContent = getRandomMessage(thankYouMessages);
-        setActiveStep(thankyouStep); // Mostra lo step del thank you
-        // emailInputElement.value = ""; // Opzionale
-      }, 400); // Durata della transizione CSS
+        setActiveStep(thankyouStep);
+      }, 400);
     } else if (emailInput.trim() === "") {
-        alert("Please enter your email."); 
-    } else { 
+        alert("Please enter your email.");
+    } else {
         alert("It seems the suggestion was not provided. Please go back and enter your suggestion.");
     }
   });
@@ -193,12 +206,4 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 300);
     }
   });
-
-  // Imposta lo step iniziale e il placeholder
-  setInputPlaceholder(); // Chiama la funzione per impostare il placeholder iniziale
-  window.addEventListener('resize', setInputPlaceholder); // Aggiorna il placeholder al resize
-
-  setActiveStep(inputStep); 
-  counterElement.textContent = 0; 
-  socket.emit('getInitialCounter');
 });
