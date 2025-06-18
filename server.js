@@ -205,7 +205,10 @@ async function sendThankYouEmail(userEmail, suggestion) {
 
 
 const path = require('path');
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/assets', express.static(path.join(__dirname, 'assets'), {
+  maxAge: '1y',
+  immutable: true
+}));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
