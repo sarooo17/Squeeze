@@ -3,8 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loaderLogoContainer = document.querySelector("#loader-overlay .loader-logo-container");
   const finalLogoSvg = document.getElementById("final-logo-svg");
 
-  // Variabili per il resto dello script
-  const socket = io('https://squeeze-833522296941.europe-west1.run.app');
+  const socket = io('https://squeeze-ap53mjpqwq-ew.a.run.app');
   const dynamicSlogan = document.getElementById("dynamic-slogan");
   const counterElement = document.getElementById("counter");
   const formFlowContainer = document.getElementById("form-flow-container");

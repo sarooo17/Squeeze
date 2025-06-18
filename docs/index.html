@@ -28,10 +28,91 @@
 
     gtag('config', 'G-DFSLXCW86T');
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Critical CSS inline (solo le regole essenziali per il primo paint) -->
+    <style>
+      body {
+        font-family: "Outfit", Arial, sans-serif;
+        background-color: #fff;
+        color: #4a4a4a;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+      }
+      h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        color: #4a4a4a;
+        margin-bottom: 25px;
+      }
+      .logo {
+        padding-top: 20px;
+        text-align: center;
+      }
+      .slogan-container {
+        min-height: 50px;
+        margin-bottom: 25px;
+      }
+      .slogan {
+        font-size: 1.5rem;
+        line-height: 1.4;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+      }
+      .counter-container {
+        margin-bottom: 30px;
+      }
+      .counter-text {
+        font-size: 1.25rem;
+        line-height: 1.5;
+      }
+      .highlight {
+        color: #ff8c00;
+        font-weight: 700;
+      }
+      .highlight-counter {
+        color: #ffc300;
+        font-weight: 700;
+        font-size: 1.5rem;
+        display: inline-block;
+        min-width: auto;
+        text-align: right;
+      }
+      /* Loader overlay: solo base per evitare flash */
+      #loader-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: #fff;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+        visibility: visible;
+      }
+    </style>
+
+    <!-- Google Fonts: preload e rel="stylesheet" non bloccante -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" onload="this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
+    </noscript>
+
+    <!-- CSS completo (rimandato/non bloccante) -->
+    <link rel="preload" as="style" href="assets/css/style.css" onload="this.rel='stylesheet'">
+    <noscript>
+      <link rel="stylesheet" href="assets/css/style.css">
+    </noscript>
+
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
 </head>
 <body>
@@ -109,8 +190,8 @@
         </div>
     </div>
 
-    <!-- Socket.IO client (aggiungi questa riga PRIMA del tuo script.js) -->
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <script src="assets/js/script.js"></script>
+    <!-- Socket.IO client e script.js: defer per non bloccare il rendering -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js" defer></script>
+    <script src="assets/js/script.js" defer></script>
 </body>
 </html>
