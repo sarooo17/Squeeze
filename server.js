@@ -290,6 +290,9 @@ io.engine.on("connection_error", (err) => {
   console.error("Contesto:", err.context);
 });
 
+const compression = require('compression');
+app.use(compression());
+
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server in ascolto sulla porta ${PORT}`);
 });
