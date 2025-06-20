@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <meta http-equiv="refresh" content="0; url=/?ref=<script>document.write(encodeURIComponent(new URLSearchParams(window.location.search).get('ref')||''))</script>">
+  <script>
+    // Redirect JS fallback (per sicurezza)
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      window.location.replace('/?ref=' + encodeURIComponent(ref));
+    } else {
+      window.location.replace('/');
+    }
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
