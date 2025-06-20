@@ -160,49 +160,10 @@ async function updateCounterAndBroadcast() {
 }
 
 io.on('connection', (socket) => {
-  console.log(`Nuovo client connesso: ${socket.id} da ${socket.handshake.address}`);
-  
-  socket.on('joinRoom', (room) => {
-    socket.join(room);
-    socket.room = room;
-    console.log(`Client ${socket.id} si è unito alla stanza ${room}`);
-  });
-
-  socket.on('candidate', (data) => {
-    socket.to(socket.room).emit('candidate', { 
-      candidate: data,
-      id: socket.id 
-    });
-    // console.log(`Candidato ICE ricevuto da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
-  });
-
-  socket.on('offer', (data) => {
-    socket.to(socket.room).emit('offer', {
-      offer: data,
-      id: socket.id
-    });
-    // console.log(`Offerta ricevuta da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
-  });
-
-  socket.on('answer', (data) => {
-    socket.to(socket.room).emit('answer', {
-      answer: data,
-      id: socket.id
-    });
-    // console.log(`Risposta ricevuta da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
-  });
-
-  socket.on('disconnect', () => {
-    console.log(`Client disconnesso: ${socket.id}`);
-    // Invia un messaggio agli altri client nella stanza
-    socket.to(socket.room).emit('userDisconnected', { id: socket.id });
-  });
-
-  socket.on('error', (err) => {
-    console.error(`Errore socket per client ${socket.id}:`, err);
-  });
+  console.log('Nuova connessione socket:', socket.id);
 
   socket.on('newEmail', async ({ email, suggestion, referredBy }) => {
+    console.log('Ricevuta richiesta newEmail:', email, suggestion, referredBy);
     try {
       // Non accettare email duplicate
       const existing = await Suggestion.findOne({ email });
