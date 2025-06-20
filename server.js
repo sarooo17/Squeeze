@@ -39,73 +39,100 @@ const suggestionSchema = new mongoose.Schema({
 });
 const Suggestion = mongoose.model('Suggestion', suggestionSchema);
 
-// Array di template email (puoi aggiungerne altri)
+// --- AGGIUNGI QUESTO SCHEMA PER GLI INVITI ---
+const inviteSchema = new mongoose.Schema({
+  referrer: String,      // email di chi invita
+  referred: String,      // email dell'amico invitato
+  date: { type: Date, default: Date.now }
+});
+const Invite = mongoose.model('Invite', inviteSchema);
+
+// Funzione per estrarre il nome dall'email (se non fornito)
+function extractNameFromEmail(email) {
+  if (!email) return 'Insider';
+  const name = email.split('@')[0];
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+// Nuovo template email super personalizzato e engaging
 const emailTemplates = [
-  (logoUrl, userEmail, suggestion, emailCounter) => `
+  (logoUrl, userEmail, suggestion, emailCounter) => {
+    const userName = extractNameFromEmail(userEmail);
+    const inviteLink = `https://www.squeeze-it.com/invite?ref=${encodeURIComponent(userEmail)}`;
+    return `
     <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
-        <style>
-          body { font-family: 'Outfit', sans-serif; background: linear-gradient(135deg, #f4f6f8, #eaf1f5); margin: 0; padding: 0; }
-          .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); overflow: hidden; }
-          .header { text-align: center; padding: 36px 24px 16px; }
-          .header img { max-width: 64px; }
-          .title { font-size: 2rem; font-weight: 700; color: #ff8c00; margin: 16px 0 6px; }
-          .subtitle { font-size: 1.2rem; color: #333; }
-          .section { padding: 0 32px 32px; }
-          .features { background: #fff3e6; border-radius: 12px; padding: 18px; margin: 20px 0; }
-          .features li { margin-bottom: 10px; font-size: 1rem; }
-          .cta-button { display: inline-block; background: #ff8c00; color: #fff; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; margin-top: 18px; }
-          .footer { font-size: 12px; color: #777; text-align: center; padding: 20px; background: #f9fafb; border-top: 1px solid #eee; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <img src="${logoUrl}" alt="Squeeze Calendar" />
-            <div class="title">Welcome to Squeeze 🎉</div>
-            <div class="subtitle">You’re Insider #${emailCounter || '0001'}</div>
-          </div>
-          <div class="section">
-            <p>Hi ${userEmail || 'there'},</p>
-            <p>Thank you for joining the <b>Squeeze Calendar</b> journey! You’re part of an early community helping us create a calendar that works for <i>you</i>.</p>
-            <div class="features">
-              <b>What makes Squeeze special:</b>
-              <ul>
-                <li>🤖 AI that learns your rhythm</li>
-                <li>📆 A clean, modern calendar interface</li>
-                <li>💬 Natural, chat-like task creation</li>
-              </ul>
-            </div>
-            <a href="https://www.squeeze-it.com/community" class="cta-button">Join Our Community</a>
-            <p style="margin-top:18px;">💡 <i>Tip: Invite friends and unlock early access perks!</i></p>
-            <p>Stay tuned — we’ll send you sneak peeks and early beta invites soon.</p>
-            <p>With gratitude,<br><b>The Squeeze Team</b></p>
-          </div>
-          <div class="footer">
-            &copy; ${new Date().getFullYear()} Squeeze. You signed up at <a href="https://www.squeeze-it.com">squeeze-it.com</a>.
-          </div>
+    <html lang="it">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+      <style>
+        body { font-family: 'Outfit', sans-serif; background: #f9fafb; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.07); overflow: hidden; }
+        .header { text-align: center; padding: 36px 24px 16px; }
+        .header img { max-width: 64px; }
+        .title { font-size: 2rem; font-weight: 700; color: #ff8c00; margin: 16px 0 6px; }
+        .subtitle { font-size: 1.2rem; color: #333; }
+        .section { padding: 0 32px 32px; }
+        .suggestion-box { background: #fff3e6; border-left: 4px solid #ff8c00; border-radius: 8px; padding: 14px 18px; margin: 18px 0 24px; font-style: italic; color: #ff8c00; }
+        .cta-button { display: inline-block; background: #ff8c00; color: #fff; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; margin-top: 18px; }
+        .invite-section { background: #eaf1f5; border-radius: 12px; padding: 18px; margin: 24px 0; text-align: center; }
+        .invite-link { color: #ff8c00; word-break: break-all; }
+        .footer { font-size: 12px; color: #777; text-align: center; padding: 20px; background: #f9fafb; border-top: 1px solid #eee; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="${logoUrl}" alt="Squeeze Calendar" />
+          <div class="title">Benvenuto a bordo, ${userName}! 🎉</div>
+          <div class="subtitle">Sei l’Insider #${emailCounter || '0001'}</div>
         </div>
-      </body>
-      </html>
-  `
-  // Puoi aggiungere altri template qui!
+        <div class="section">
+          <p>Ciao <b>${userName}</b>,</p>
+          <p>Grazie per esserti iscritto alla lista d’attesa di <b>Squeeze Calendar</b>! 🎈</p>
+          <p>Abbiamo ricevuto il tuo suggerimento su come un calendario davvero smart potrebbe aiutarti:</p>
+          <div class="suggestion-box">
+            “${suggestion}”
+          </div>
+          <p>Il tuo contributo è prezioso: stiamo costruendo Squeeze proprio insieme a chi, come te, vuole un calendario che <b>si adatti davvero alla vita reale</b>.</p>
+          <p>
+            <b>Cosa rende Squeeze unico?</b><br>
+            🤖 Impara le tue abitudini e ti aiuta a respirare<br>
+            📆 Interfaccia moderna, semplice e zero ansia<br>
+            💬 Puoi parlare con il calendario come con un amico
+          </p>
+          <div class="invite-section">
+            <b>Vuoi Squeeze ancora prima?</b><br>
+            Invita 3 amici con il tuo link personale e avrai <b>3 mesi gratis</b> sul piano Pro al lancio!<br>
+            <a class="invite-link" href="${inviteLink}">${inviteLink}</a>
+          </div>
+          <p style="margin-top:18px;">🚀 <i>Presto riceverai anteprime esclusive e l’accesso alla beta privata.</i></p>
+          <p>Per qualsiasi domanda o idea, rispondi a questa mail o scrivici su <a href="mailto:info@squeeze-it.com">info@squeeze-it.com</a>.</p>
+          <p>Grazie di cuore per essere parte di questa avventura!<br>
+          <b>Il Team Squeeze</b></p>
+        </div>
+        <div class="footer">
+          &copy; ${new Date().getFullYear()} Squeeze. Sei iscritto come <a href="mailto:${userEmail}">${userEmail}</a>.<br>
+          <a href="https://www.squeeze-it.com">squeeze-it.com</a>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+  }
 ];
 
-// Funzione per inviare l'email di ringraziamento
+// Funzione per inviare l'email di ringraziamento super personalizzata
 async function sendThankYouEmail(userEmail, suggestion) {
   const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png';
-  // Scegli un template casuale
-  const templateFn = emailTemplates[Math.floor(Math.random() * emailTemplates.length)];
+  const templateFn = emailTemplates[0];
   const html = templateFn(logoUrl, userEmail, suggestion, emailCounter);
 
   const msg = {
     to: userEmail,
     from: process.env.EMAIL_FROM,
-    subject: 'Benvenuto nella lista d’attesa di Squeeze Calendar! 🎉',
+    subject: `You’re in! 🎉 Get ready to reshape your time with Squeeze`,
     html
   };
 
@@ -120,6 +147,31 @@ async function sendThankYouEmail(userEmail, suggestion) {
   }
 }
 
+// --- FUNZIONE PER INVIARE LA MAIL DI PREMIO ---
+async function sendRewardEmail(referrerEmail) {
+  const userName = extractNameFromEmail(referrerEmail);
+  const msg = {
+    to: referrerEmail,
+    from: process.env.EMAIL_FROM,
+    subject: `🎁 Complimenti ${userName}! Hai sbloccato 3 mesi gratis su Squeeze Pro`,
+    html: `
+      <div style="font-family:Outfit,sans-serif;max-width:600px;margin:auto;background:#fff;border-radius:16px;padding:32px;">
+        <h2 style="color:#ff8c00;">Hai invitato 3 amici! 🎉</h2>
+        <p>Ciao <b>${userName}</b>,</p>
+        <p>Grazie per aver condiviso Squeeze! Hai sbloccato <b>3 mesi gratis</b> sul piano Pro che riceverai al lancio ufficiale.</p>
+        <p>Continua a invitare amici per altri vantaggi e resta sintonizzato per le prossime novità!</p>
+        <p style="margin-top:24px;">Con gratitudine,<br><b>Il Team Squeeze</b></p>
+      </div>
+    `
+  };
+  try {
+    await sgMail.send(msg);
+    console.log('Email premio inviata a:', referrerEmail);
+  } catch (error) {
+    console.error('Errore invio email premio:', error);
+    if (error.response) console.error(error.response.body);
+  }
+}
 
 const path = require('path');
 app.use('/assets', express.static(path.join(__dirname, 'assets'), {
@@ -182,14 +234,35 @@ io.on('connection', (socket) => {
     console.error(`Errore socket per client ${socket.id}:`, err);
   });
 
-  socket.on('newEmail', async ({ email, suggestion }) => {
+  // Quando un nuovo utente si iscrive tramite referral
+  socket.on('newEmail', async ({ email, suggestion, ref }) => {
     try {
-      // Salva nel DB
+      // Salva nel DB la suggestion
       await Suggestion.create({ email, suggestion });
+
+      // Se c'è un referral, salvalo
+      if (ref && ref !== email) {
+        // Evita auto-inviti
+        const alreadyInvited = await Invite.findOne({ referrer: ref, referred: email });
+        if (!alreadyInvited) {
+          await Invite.create({ referrer: ref, referred: email });
+        }
+      }
+
       // Aggiorna il counter e notifica tutti i client
       await updateCounterAndBroadcast();
+
       // Invia l'email di ringraziamento
       await sendThankYouEmail(email, suggestion);
+
+      // Se c'è un referral, controlla se il referrer ha raggiunto 3 inviti
+      if (ref && ref !== email) {
+        const inviteCount = await Invite.countDocuments({ referrer: ref });
+        if (inviteCount === 3) {
+          // Qui puoi inviare una mail di premio al referrer
+          await sendRewardEmail(ref);
+        }
+      }
     } catch (err) {
       console.error('Errore durante salvataggio/invio email:', err);
     }
