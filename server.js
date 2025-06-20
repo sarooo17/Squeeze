@@ -131,7 +131,10 @@ async function sendThankYouEmail(userEmail, suggestion) {
 
   const msg = {
     to: userEmail,
-    from: process.env.EMAIL_FROM,
+    from: {
+            email: process.env.SENDGRID_FROM_EMAIL,
+            name: 'Squeeze',
+        },
     subject: `You’re in! 🎉 Get ready to reshape your time with Squeeze`,
     html
   };
@@ -152,7 +155,10 @@ async function sendRewardEmail(referrerEmail) {
   const userName = extractNameFromEmail(referrerEmail);
   const msg = {
     to: referrerEmail,
-    from: process.env.EMAIL_FROM,
+    from: {
+            email: process.env.SENDGRID_FROM_EMAIL,
+            name: 'Squeeze',
+        },
     subject: `🎁 Complimenti ${userName}! Hai sbloccato 3 mesi gratis su Squeeze Pro`,
     html: `
       <div style="font-family:Outfit,sans-serif;max-width:600px;margin:auto;background:#fff;border-radius:16px;padding:32px;">
