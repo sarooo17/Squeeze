@@ -105,8 +105,7 @@ async function sendThankYouEmail(userEmail, suggestion) {
   const msg = {
     to: userEmail,
     from: {
-      email: process.env.SENDGRID_FROM_EMAIL,
-      name: 'Squeeze'
+      email: process.env.SENDGRID_FROM_EMAIL
     },
     subject: 'Benvenuto nella lista d’attesa di Squeeze Calendar! 🎉',
     html
