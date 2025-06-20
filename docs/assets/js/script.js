@@ -177,11 +177,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  function getRefFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('ref');
+  }
+  const referrerFromUrl = getRefFromUrl();
+
   emailForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const emailInput = emailInputElement.value;
     if (emailInput.trim() !== "" && userSuggestion.trim() !== "") {
-      socket.emit('newEmail', { email: emailInput, suggestion: userSuggestion });
+      // --- MODIFICA QUI: INVIA ANCHE IL REF SE PRESENTE ---
+      socket.emit('newEmail', { 
+        email: emailInput, 
+        suggestion: userSuggestion, 
+        ref: referrerFromUrl // aggiungi il referrer se presente
+      });
       setActiveStep(null);
       setTimeout(() => {
         dynamicThankYouMessageElement.textContent = getRandomMessage(thankYouMessages);
