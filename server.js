@@ -43,134 +43,54 @@ const Suggestion = mongoose.model('Suggestion', suggestionSchema);
 const emailTemplates = [
   (logoUrl, userEmail, suggestion) => `
     <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-      <style>
-        body { font-family: 'Outfit', Arial, sans-serif; background: #f4f6f8; color: #333; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 30px auto; background: #fff; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.07); overflow: hidden; }
-        .header { text-align: center; padding: 32px 20px 18px 20px; }
-        .header img { max-width: 48px; }
-        .title { color: #ff8c00; font-size: 2rem; font-weight: 700; margin: 18px 0 8px 0; }
-        .subtitle { color: #333; font-size: 1.1rem; margin-bottom: 18px; }
-        .section { padding: 0 32px 24px 32px; }
-        .features { background: #fff9e6; border-radius: 10px; padding: 18px 20px; margin: 18px 0; }
-        .features ul { padding-left: 18px; }
-        .features li { margin-bottom: 8px; }
-        .highlight { color: #ff8c00; font-weight: 600; }
-        .suggestion { margin: 18px 0; font-style: italic; color: #555; background: #f8f9fa; border-left: 4px solid #ff8c00; padding: 10px 18px; border-radius: 6px; }
-        .privilege { background: #eafbe7; color: #1b7f3a; border-radius: 8px; padding: 14px 18px; margin: 18px 0; font-weight: 600; }
-        .footer { text-align: center; font-size: 12px; color: #888; padding: 18px 20px; background: #f8f9fa; border-top: 1px solid #eee; }
-        @media (max-width: 600px) { .container, .section { padding: 10px !important; } }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <img src="${logoUrl}" alt="Squeeze Calendar Logo">
-          <div class="title">You're in 🎉</div>
-          <div class="subtitle">Welcome to the <span class="highlight">Squeeze Calendar</span> waitlist</div>
-        </div>
-        <div class="section">
-          <p>Hi there,</p>
-          <p>We're thrilled to have you among the first to discover <b>Squeeze</b>, the intelligent calendar designed to help you stay organized and reduce stress using <span class="highlight">Artificial Intelligence</span>.</p>
-          <div class="features">
-            <b>What you’ll get first:</b>
-            <ul>
-              <li>📆 <b>Smart calendar</b> that understands and organizes your events</li>
-              <li>💬 <b>Chat-like interface</b> to add tasks and plans naturally</li>
-              <li>🤖 <b>AI support</b> to simplify daily planning</li>
-            </ul>
-            <p style="margin-top:12px;">
-              ...and there's more coming soon: intelligent suggestions, advanced scheduling, personalized reminders, and a smoother way to manage your time.
-            </p>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+        <style>
+          body { font-family: 'Outfit', sans-serif; background: linear-gradient(135deg, #f4f6f8, #eaf1f5); margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.05); overflow: hidden; }
+          .header { text-align: center; padding: 36px 24px 16px; }
+          .header img { max-width: 64px; }
+          .title { font-size: 2rem; font-weight: 700; color: #ff8c00; margin: 16px 0 6px; }
+          .subtitle { font-size: 1.2rem; color: #333; }
+          .section { padding: 0 32px 32px; }
+          .features { background: #fff3e6; border-radius: 12px; padding: 18px; margin: 20px 0; }
+          .features li { margin-bottom: 10px; font-size: 1rem; }
+          .cta-button { display: inline-block; background: #ff8c00; color: #fff; padding: 12px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; margin-top: 18px; }
+          .footer { font-size: 12px; color: #777; text-align: center; padding: 20px; background: #f9fafb; border-top: 1px solid #eee; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <img src="${logoUrl}" alt="Squeeze Calendar" />
+            <div class="title">Welcome to Squeeze 🎉</div>
+            <div class="subtitle">You’re Insider #${userCode || '0001'}</div>
           </div>
-          <div class="privilege">
-            You're one of our <b>early insiders</b>! You’ll receive exclusive updates and get to try Squeeze before anyone else.
+          <div class="section">
+            <p>Hi ${userName || 'there'},</p>
+            <p>Thank you for joining the <b>Squeeze Calendar</b> journey! You’re part of an early community helping us create a calendar that works for <i>you</i>.</p>
+            <div class="features">
+              <b>What makes Squeeze special:</b>
+              <ul>
+                <li>🤖 AI that learns your rhythm</li>
+                <li>📆 A clean, modern calendar interface</li>
+                <li>💬 Natural, chat-like task creation</li>
+              </ul>
+            </div>
+            <a href="https://www.squeeze-it.com/community" class="cta-button">Join Our Community</a>
+            <p style="margin-top:18px;">💡 <i>Tip: Invite friends and unlock early access perks!</i></p>
+            <p>Stay tuned — we’ll send you sneak peeks and early beta invites soon.</p>
+            <p>With gratitude,<br><b>The Squeeze Team</b></p>
           </div>
-          <p>Your suggestion to us:</p>
-          <div class="suggestion">
-            ${suggestion}
+          <div class="footer">
+            &copy; ${new Date().getFullYear()} Squeeze. You signed up at <a href="https://www.squeeze-it.com">squeeze-it.com</a>.
           </div>
-          <p>
-            <b>Thank you!</b> Your feedback means a lot to us. Every idea, thought, or wish is carefully reviewed by our team.<br><br>
-            <span style="color:#ff8c00;font-weight:600;">Squeeze was born to help people plan better, stress less, and make the most of their time—with a little help from AI.</span>  
-            With your input, we’ll build something truly helpful for real people.
-          </p>
-          <p>Stay tuned—we’ll keep you updated as we get closer to launch!</p>
-          <p>Warm regards,<br><b>The Squeeze Team</b></p>
         </div>
-        <div class="footer">
-          &copy; ${new Date().getFullYear()} Squeeze. You received this email because you signed up at <a href="https://www.squeeze-it.com/">squeeze-it.com</a>.
-        </div>
-      </div>
-    </body>
-    </html>
-  `,
-  (logoUrl, userEmail, suggestion) => `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-      <style>
-        body { font-family: 'Outfit', Arial, sans-serif; background: #f4f6f8; color: #333; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 30px auto; background: #fff; border-radius: 14px; box-shadow: 0 6px 20px rgba(0,0,0,0.07); overflow: hidden; }
-        .header { text-align: center; padding: 32px 20px 18px 20px; }
-        .header img { max-width: 48px; }
-        .title { color: #ff8c00; font-size: 2rem; font-weight: 700; margin: 18px 0 8px 0; }
-        .subtitle { color: #333; font-size: 1.1rem; margin-bottom: 18px; }
-        .section { padding: 0 32px 24px 32px; }
-        .features { background: #fff9e6; border-radius: 10px; padding: 18px 20px; margin: 18px 0; }
-        .features ul { padding-left: 18px; }
-        .features li { margin-bottom: 8px; }
-        .highlight { color: #ff8c00; font-weight: 600; }
-        .suggestion { margin: 18px 0; font-style: italic; color: #555; background: #f8f9fa; border-left: 4px solid #ff8c00; padding: 10px 18px; border-radius: 6px; }
-        .privilege { background: #eafbe7; color: #1b7f3a; border-radius: 8px; padding: 14px 18px; margin: 18px 0; font-weight: 600; }
-        .footer { text-align: center; font-size: 12px; color: #888; padding: 18px 20px; background: #f8f9fa; border-top: 1px solid #eee; }
-        @media (max-width: 600px) { .container, .section { padding: 10px !important; } }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <img src="${logoUrl}" alt="Squeeze Calendar Logo">
-          <div class="title">Welcome aboard! 🚀</div>
-          <div class="subtitle">You're now on the <span class="highlight">Squeeze Calendar</span> waitlist</div>
-        </div>
-        <div class="section">
-          <p>Hello!</p>
-          <p>Thanks for joining the Squeeze Calendar waitlist. We're building a smarter, friendlier way to organize your life with a touch of AI magic.</p>
-          <div class="features">
-            <b>Why you'll love Squeeze:</b>
-            <ul>
-              <li>🧠 <b>AI-powered suggestions</b> for your daily plans</li>
-              <li>📅 <b>Easy event management</b> with a modern calendar</li>
-              <li>💬 <b>Chat with your calendar</b> just like a friend</li>
-            </ul>
-          </div>
-          <div class="privilege">
-            As an early subscriber, you'll get exclusive previews and the chance to shape Squeeze with your feedback!
-          </div>
-          <p>Your suggestion:</p>
-          <div class="suggestion">
-            ${suggestion}
-          </div>
-          <p>
-            <b>We appreciate your input!</b> Every suggestion helps us make Squeeze better for everyone.<br>
-            Stay tuned for updates and sneak peeks.
-          </p>
-          <p>Cheers,<br><b>The Squeeze Team</b></p>
-        </div>
-        <div class="footer">
-          &copy; ${new Date().getFullYear()} Squeeze. You received this email because you signed up at <a href="https://www.squeeze-it.com/">squeeze-it.com</a>.
-        </div>
-      </div>
-    </body>
-    </html>
+      </body>
+      </html>
   `
   // Puoi aggiungere altri template qui!
 ];

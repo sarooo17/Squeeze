@@ -30,18 +30,30 @@
     </script>
 
     <!-- Google Fonts: preload e rel="stylesheet" non bloccante -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" onload="this.rel='stylesheet'">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
     </noscript>
 
     <!-- CSS completo (rimandato/non bloccante) -->
-    <link rel="preload" as="style" href="assets/css/style.css" onload="this.rel='stylesheet'">
+    <link rel="preload" href="assets/css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
       <link rel="stylesheet" href="assets/css/style.css">
     </noscript>
 
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
+
+    <style>
+        /* Inserisci qui solo le regole CSS essenziali per il primo rendering (above the fold) */
+        body { font-family: "Outfit", Arial, Helvetica, sans-serif; background: #fff; color: #4a4a4a; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .blob { position: absolute; border-radius: 50%; opacity: 0.5; }
+        .blob-yellow { width: 200px; height: 200px; top: -50px; left: -50px; background: #FFC300; }
+        .blob-orange { width: 300px; height: 300px; bottom: -100px; right: -100px; background: #FF8C00; }
+        #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .loader-logo-container { display: flex; justify-content: center; align-items: center; }
+        #loader-svg { width: 120px; height: 120px; }
+    </style>
 </head>
 <body>
     <!-- Background blobs -->
