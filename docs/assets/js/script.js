@@ -181,7 +181,12 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const emailInput = emailInputElement.value;
     if (emailInput.trim() !== "" && userSuggestion.trim() !== "") {
-      socket.emit('newEmail', { email: emailInput, suggestion: userSuggestion });
+      // Invia anche il referral code se presente
+      socket.emit('newEmail', { 
+        email: emailInput, 
+        suggestion: userSuggestion, 
+        ...(referralCode ? { referredBy: referralCode } : {}) 
+      });
       setActiveStep(null);
       setTimeout(() => {
         dynamicThankYouMessageElement.textContent = getRandomMessage(thankYouMessages);
@@ -206,3 +211,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// Leggi il referral code dall'URL (se presente)
+function getReferralCodeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('ref');
+}
+const referralCode = getReferralCodeFromUrl();
