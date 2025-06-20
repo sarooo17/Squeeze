@@ -41,7 +41,7 @@ const Suggestion = mongoose.model('Suggestion', suggestionSchema);
 
 // Array di template email (puoi aggiungerne altri)
 const emailTemplates = [
-  (logoUrl, userEmail, suggestion, userCode) => `
+  (logoUrl, userEmail, suggestion) => `
     <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -70,7 +70,7 @@ const emailTemplates = [
             <div class="subtitle">You’re Insider #${userCode || '0001'}</div>
           </div>
           <div class="section">
-            <p>Hi ${userEmail || 'there'},</p>
+            <p>Hi ${userName || 'there'},</p>
             <p>Thank you for joining the <b>Squeeze Calendar</b> journey! You’re part of an early community helping us create a calendar that works for <i>you</i>.</p>
             <div class="features">
               <b>What makes Squeeze special:</b>
@@ -100,7 +100,7 @@ async function sendThankYouEmail(userEmail, suggestion) {
   const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png';
   // Scegli un template casuale
   const templateFn = emailTemplates[Math.floor(Math.random() * emailTemplates.length)];
-  const html = templateFn(logoUrl, userEmail, suggestion, userCode = emailCounter);
+  const html = templateFn(logoUrl, userEmail, suggestion);
 
   const msg = {
     to: userEmail,
