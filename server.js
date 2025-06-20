@@ -100,11 +100,14 @@ async function sendThankYouEmail(userEmail, suggestion) {
   const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png';
   // Scegli un template casuale
   const templateFn = emailTemplates[Math.floor(Math.random() * emailTemplates.length)];
-  const html = templateFn(logoUrl, userEmail, suggestion, userCode = emailCounter);
+  const html = templateFn(logoUrl, userEmail, suggestion, emailCounter);
 
   const msg = {
     to: userEmail,
-    from: process.env.SENDGRID_FROM_EMAIL,
+    from: {
+      email: process.env.SENDGRID_FROM_EMAIL,
+      name: 'Squeeze'
+    },
     subject: 'Benvenuto nella lista d’attesa di Squeeze Calendar! 🎉',
     html
   };
