@@ -1,4 +1,8 @@
-/* Base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 * {
   margin: 0;
   padding: 0;
@@ -7,7 +11,7 @@
 
 html {
   overflow-x: hidden;
-  overflow-y: hidden; /* Mantenuto come da tua richiesta */
+  overflow-y: hidden;
   width: 100%;
   height: 100%;
 }
@@ -23,7 +27,6 @@ body {
   overflow-y: hidden;
 }
 
-/* ---- LOADER STYLES (Approccio con due SVG e VOLO) ---- */
 #loader-overlay {
   position: fixed;
   inset: 0;
@@ -47,17 +50,15 @@ body {
 .loader-logo-container {
   width: 120px;
   height: 120px;
-  position: relative; /* Necessario per il calcolo corretto di getBoundingClientRect se non è già posizionato */
-  /* Transizioni per l'animazione di "volo" */
+  position: relative;
   transition-property: transform, opacity;
-  transition-duration: 0.8s; /* Durata del volo */
-  transition-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045); /* Easing per il volo (easeInBack-like) */
+  transition-duration: 0.8s;
+  transition-timing-function: cubic-bezier(0.6, -0.28, 0.735, 0.045);
   will-change: transform, opacity;
 }
 .loader-logo-container.flying {
-  /* La trasformazione (translate e scale) sarà impostata da JS */
-  opacity: 0; /* Il logo del loader svanisce mentre vola */
-  transition-delay: 0.1s; /* Leggero ritardo per l'opacità per vedere l'inizio del movimento */
+  opacity: 0;
+  transition-delay: 0.1s;
 }
 
 
@@ -67,7 +68,6 @@ body {
   overflow: visible;
 }
 
-/* Animazione dei path INTERNI all'SVG del LOADER */
 #loader-svg #loader-orange-piece,
 #loader-svg #loader-yellow-piece {
   opacity: 0;
@@ -83,7 +83,6 @@ body {
   transform: translateX(50px) rotate(90deg) scale(0.5);
 }
 
-/* Quando i path del loader sono "animati" (classe aggiunta da JS a #loader-overlay) */
 #loader-overlay.paths-animated .loader-logo-container #loader-svg #loader-orange-piece {
   opacity: 1;
   transform: translateX(0) rotate(0deg) scale(1);
@@ -94,10 +93,8 @@ body {
   transform: translateX(0) rotate(0deg) scale(1);
   transition-delay: 0.3s;
 }
-/* ---- FINE LOADER STYLES ---- */
 
 
-/* ---- LOGO FINALE NELLA PAGINA ---- */
 .logo {
   padding-top: 20px;
   text-align: center;
@@ -106,23 +103,20 @@ body {
 .logo img {
   width: 50px;
   height: 50px;
-  transition: transform 0.5s ease-in-out; /* Transizione per il logo finale */
+  transition: transform 0.5s ease-in-out; 
 }
 
 .logo svg#final-logo-svg {
   width: 40px;
   height: 40px;
-  opacity: 0; /* Inizia nascosto */
-  transition: opacity 0.5s ease-in-out; /* Transizione per il fade-in */
-  /* Non aggiungere delay qui, il JS lo gestirà */
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 }
 .logo svg#final-logo-svg.visible {
   opacity: 1;
 }
-/* ---- FINE LOGO FINALE ---- */
 
 
-/* Blob animations */
 .blob {
   position: absolute;
   border-radius: 50%;
@@ -161,7 +155,6 @@ body {
   100% { transform: translate(-30px, 80px) scale(0.9); }
 }
 
-/* Container */
 .container {
   width: 100%;
   max-width: 1200px;
@@ -176,7 +169,6 @@ body {
   -webkit-backdrop-filter: blur(5px);
 }
 
-/* Content */
 .content {
   text-align: center;
   max-width: 800px;
@@ -191,14 +183,13 @@ body {
 }
 
 h1 {
-  min-height: 4rem; /* o l’altezza che ha con Outfit */
+  min-height: 4rem;
   font-size: 4rem;
   font-weight: 700;
   color: #4a4a4a;
   margin-bottom: 25px;
 }
 
-/* Slogan */
 .slogan-container {
   height: auto;
   min-height: 50px;
@@ -215,7 +206,6 @@ h1 {
   transition: opacity 0.5s ease;
 }
 
-/* Counter */
 .counter-container {
   margin-bottom: 30px;
 }
@@ -239,7 +229,6 @@ h1 {
   text-align: right;
 }
 
-/* Input form STYLES */
 .form-with-inline-button {
   position: relative;
   display: flex;
@@ -255,7 +244,7 @@ h1 {
 }
 
 .form-with-inline-button input#email-input {
-    padding-right: auto; /* Questo potrebbe non avere l'effetto desiderato, padding-right di solito prende un valore fisso */
+    padding-right: auto; 
 }
 
 .form-with-inline-button button[type="submit"] {
@@ -302,19 +291,16 @@ button:hover {
   background-color: #e67e00;
 }
 
-/* Feedback message */
 .feedback-message {
   margin-bottom: 20px;
   font-size: 1.25rem;
 }
 
-/* Thank you message */
 .thank-you-message {
   font-size: 1.25rem;
   color: #4a4a4a;
 }
 
-/* Footer */
 .footer {
   padding-bottom: 15px;
   text-align: center;
@@ -323,7 +309,6 @@ button:hover {
   width: 100%;
 }
 
-/* NUOVI STILI PER IL FLUSSO DEL FORM */
 .form-flow-container {
   width: 100%;
   max-width: 700px;
@@ -385,7 +370,6 @@ button:hover {
   button { padding: 10px 20px; font-size: 15px; }
   .feedback-message, .thank-you-message { font-size: 1rem; }
   .logo { padding-top: 15px; }
-  /* .logo img { width: 30px; height: 30px; } Rimosso perché usiamo SVG */
   .footer { padding-bottom: 10px; font-size: 0.75rem; }
   .blob-yellow { width: 350px; height: 350px; top: -10%; left: -20%; filter: blur(60px); animation-duration: 18s; }
   .blob-orange { width: 300px; height: 300px; bottom: -10%; right: -20%; filter: blur(50px); animation-duration: 15s; }
@@ -404,7 +388,6 @@ button:hover {
   .form-with-inline-button button[type="submit"] { font-size: 15px; padding: 10px 15px; }
   .feedback-message, .thank-you-message { font-size: 0.9rem; }
   .logo { padding-top: 10px; }
-  /* .logo img { width: 28px; height: 28px; } Rimosso perché usiamo SVG */
   .footer { padding-bottom: 8px; font-size: 0.7rem; }
   .blob-yellow { width: 250px; height: 250px; top: -5%; left: -15%; filter: blur(40px); opacity: 0.2; }
   .blob-orange { width: 200px; height: 200px; bottom: -5%; right: -15%; filter: blur(35px); opacity: 0.2; }

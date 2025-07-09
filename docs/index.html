@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Titolo e descrizione -->
     <title>Squeeze Calendar - Coming Soon</title>
     <meta name="description" content="Iscriviti alla lista d'attesa di Squeeze Calendar, il nuovo modo di organizzare i tuoi eventi!">
 
-    <!-- Open Graph per social -->
     <meta property="og:title" content="Squeeze Calendar - Coming Soon">
     <meta property="og:description" content="Iscriviti alla lista d'attesa di Squeeze Calendar, il nuovo modo di organizzare i tuoi eventi!">
     <meta property="og:image" content="https://www.squeeze-it.com/assets/images/logo.png">
     <meta property="og:url" content="https://www.squeeze-it.com/">
 
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Squeeze Calendar - Coming Soon">
     <meta name="twitter:description" content="Iscriviti alla lista d'attesa di Squeeze Calendar, il nuovo modo di organizzare i tuoi eventi!">
@@ -29,13 +26,11 @@
     gtag('config', 'G-DFSLXCW86T');
     </script>
 
-    <!-- Google Fonts: preload e rel="stylesheet" non bloccante -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap">
     </noscript>
 
-    <!-- CSS completo (rimandato/non bloccante) -->
     <link rel="preload" href="assets/css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
       <link rel="stylesheet" href="assets/css/style.css">
@@ -44,7 +39,6 @@
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
 
     <style>
-        /* Inserisci qui solo le regole CSS essenziali per il primo rendering (above the fold) */
         body { font-family: "Outfit", Arial, Helvetica, sans-serif; background: #fff; color: #4a4a4a; }
         .container { max-width: 1200px; margin: 0 auto; }
         .blob { position: absolute; border-radius: 50%; opacity: 0.5; }
@@ -56,75 +50,53 @@
     </style>
 </head>
 <body>
-    <!-- Background blobs -->
     <div class="blob blob-yellow"></div>
     <div class="blob blob-orange"></div>
 
-    <!-- Loader Overlay con il suo SVG -->
     <div id="loader-overlay">
-        <div class="loader-logo-container"> <!-- Un contenitore per il logo del loader -->
+        <div class="loader-logo-container">
             <svg id="loader-svg" width="120" height="120" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path id="loader-orange-piece" d="M28.165 0C31.7693 3.60423 34 8.58298 34 14.083L33.9941 14.5967C33.7213 25.3585 24.9114 33.9987 14.084 33.999L13.5693 33.9932C8.27359 33.8589 3.49147 31.6569 0 28.165L2.8291 25.3369C5.70951 28.217 9.68882 29.999 14.084 29.999C22.874 29.9987 29.9996 22.873 30 14.083C30 9.68784 28.218 5.70853 25.3379 2.82812L28.165 0Z" fill="#FF8C00"/>
                 <path id="loader-yellow-piece" d="M23.7627 4.39966C26.2408 6.87759 27.7734 10.301 27.7734 14.0823C27.7734 21.6444 21.6432 27.7745 14.0811 27.7747C10.2997 27.7747 6.87636 26.242 4.39844 23.7639L23.7627 4.39966Z" fill="#FFC300"/>
             </svg>
         </div>
     </div>
-
-    <!-- Main content -->
     <div class="container">
-        <!-- Logo finale nella pagina -->
         <div class="logo">
             <svg id="final-logo-svg" width="40" height="40" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Squeeze Calendar Logo">
                 <path d="M28.165 0C31.7693 3.60423 34 8.58298 34 14.083L33.9941 14.5967C33.7213 25.3585 24.9114 33.9987 14.084 33.999L13.5693 33.9932C8.27359 33.8589 3.49147 31.6569 0 28.165L2.8291 25.3369C5.70951 28.217 9.68882 29.999 14.084 29.999C22.874 29.9987 29.9996 22.873 30 14.083C30 9.68784 28.218 5.70853 25.3379 2.82812L28.165 0Z" fill="#FF8C00"/>
                 <path d="M23.7627 4.39966C26.2408 6.87759 27.7734 10.301 27.7734 14.0823C27.7734 21.6444 21.6432 27.7745 14.0811 27.7747C10.2997 27.7747 6.87636 26.242 4.39844 23.7639L23.7627 4.39966Z" fill="#FFC300"/>
             </svg>
         </div>
-
-        <!-- Main content -->
         <div class="content">
             <h1>Coming Soon</h1>
-            
-            <!-- Dynamic slogan -->
             <div class="slogan-container">
                 <p id="dynamic-slogan" class="slogan">The calendar that knows you. And lets you <span class="highlight">breathe</span>.</p>
             </div>
-            
-            <!-- Counter -->
             <div class="counter-container">
                 <p class="counter-text"><span id="counter" class="highlight-counter">346</span> people are already waiting for their dream calendar. And you?</p>
             </div>
-            
-            <!-- UNICO CONTENITORE PER TUTTI GLI STEP DEL FORM -->
             <div id="form-flow-container" class="form-flow-container">
-                <!-- Step 1: Input form -->
                 <div id="input-step" class="form-step active-step">
                     <form id="user-form" class="form-with-inline-button">
                         <input type="text" id="user-input" placeholder="How could a truly smart calendar help you?" required>
                         <button type="submit" id="submit-btn">I want to try it</button>
                     </form>
                 </div>
-
-                <!-- Step 2: Feedback message -->
                 <div id="feedback-step" class="form-step">
                     <p id="feedback-message" class="feedback-message">We're working on it 💪</p>
                 </div>
-                
-                <!-- Step 3: Email form -->
                 <div id="email-step" class="form-step">
                     <form id="email-form" class="form-with-inline-button">
                         <input type="email" id="email-input" placeholder="Your email to be notified at launch" required>
                         <button type="submit" id="email-submit-btn">Notify me</button>
                     </form>
                 </div>
-                
-                <!-- Step 4: Thank you message -->
                 <div id="thankyou-step" class="form-step">
                     <p id="dynamic-thank-you-message" class="thank-you-message">Thank you! We'll notify you when we launch.</p>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
         <div class="footer">
             <p>© 2025 Squeeze. All rights reserved.</p>
         </div>

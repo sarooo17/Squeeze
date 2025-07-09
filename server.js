@@ -1,30 +1,30 @@
-require('dotenv').config(); 
 
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const mongoose = require('mongoose'); // <--- aggiunto
+const mongoose = require('mongoose');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const app = express();
 const server = http.createServer(app);
-// MODIFICA QUI: Aggiungi la configurazione CORS
 const io = socketIo(server, {
   cors: {
-    origin: "https://www.squeeze-it.com", // Assicurati che sia questo l'URL del client
+    origin: "https://www.squeeze-it.com",
     methods: ["GET", "POST"],
     credentials: true
   }
 });
+
 
 console.log(`Socket.IO server inizializzato. CORS origin: ${io.opts.cors.origin}`);
 
 const PORT = process.env.PORT || 8080;
 const BASE_COUNTER = 346;
 
-// --- MONGODB SETUP ---
-const mongoUri = process.env.MONGODB_URI; // Imposta questa variabile su Cloud Run!
+
+const mongoUri = process.env.MONGODB_URI;
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connesso a MongoDB Atlas!'))
   .catch(err => {
@@ -39,7 +39,6 @@ const suggestionSchema = new mongoose.Schema({
 });
 const Suggestion = mongoose.model('Suggestion', suggestionSchema);
 
-// --- AGGIUNGI QUESTO SCHEMA PER GLI INVITI ---
 const inviteSchema = new mongoose.Schema({
   referrer: String,      // email di chi invita
   referred: String,      // email dell'amico invitato
@@ -47,14 +46,13 @@ const inviteSchema = new mongoose.Schema({
 });
 const Invite = mongoose.model('Invite', inviteSchema);
 
-// Funzione per estrarre il nome dall'email (se non fornito)
+
 function extractNameFromEmail(email) {
   if (!email) return 'Insider';
   const name = email.split('@')[0];
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
-// Nuovo template email super personalizzato e engaging
 const emailTemplates = [
   (logoUrl, userEmail, suggestion, emailCounter) => {
     const userName = extractNameFromEmail(userEmail);
@@ -123,7 +121,6 @@ const emailTemplates = [
   }
 ];
 
-// Funzione per inviare l'email di ringraziamento super personalizzata
 async function sendThankYouEmail(userEmail, suggestion) {
   const logoUrl = process.env.LOGO_URL || 'https://www.squeeze-it.com/assets/images/logo.png';
   const templateFn = emailTemplates[0];
@@ -131,10 +128,7 @@ async function sendThankYouEmail(userEmail, suggestion) {
 
   const msg = {
     to: userEmail,
-    from: {
-            email: process.env.SENDGRID_FROM_EMAIL,
-            name: 'Squeeze',
-        },
+    from: process.env.EMAIL_FROM,
     subject: `You’re in! 🎉 Get ready to reshape your time with Squeeze`,
     html
   };
@@ -150,7 +144,6 @@ async function sendThankYouEmail(userEmail, suggestion) {
   }
 }
 
-// --- FUNZIONE PER INVIARE LA MAIL DI PREMIO ---
 async function sendRewardEmail(referrerEmail) {
   const userName = extractNameFromEmail(referrerEmail);
   const msg = {
@@ -179,6 +172,7 @@ async function sendRewardEmail(referrerEmail) {
   }
 }
 
+
 const path = require('path');
 app.use('/assets', express.static(path.join(__dirname, 'assets'), {
   maxAge: '1y',
@@ -188,8 +182,9 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// --- SOCKET.IO ---
 let emailCounter = BASE_COUNTER;
+
+
 
 async function updateCounterAndBroadcast() {
   const count = await Suggestion.countDocuments();
@@ -197,13 +192,11 @@ async function updateCounterAndBroadcast() {
   io.emit('updateCounter', emailCounter);
 }
 
+
 io.on('connection', (socket) => {
-  console.log(`Nuovo client connesso: ${socket.id} da ${socket.handshake.address}`);
-  
   socket.on('joinRoom', (room) => {
     socket.join(room);
     socket.room = room;
-    console.log(`Client ${socket.id} si è unito alla stanza ${room}`);
   });
 
   socket.on('candidate', (data) => {
@@ -211,7 +204,6 @@ io.on('connection', (socket) => {
       candidate: data,
       id: socket.id 
     });
-    // console.log(`Candidato ICE ricevuto da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
   });
 
   socket.on('offer', (data) => {
@@ -219,7 +211,6 @@ io.on('connection', (socket) => {
       offer: data,
       id: socket.id
     });
-    // console.log(`Offerta ricevuta da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
   });
 
   socket.on('answer', (data) => {
@@ -227,12 +218,9 @@ io.on('connection', (socket) => {
       answer: data,
       id: socket.id
     });
-    // console.log(`Risposta ricevuta da ${socket.id} per la stanza ${socket.room}:`, data); // Potrebbe essere troppo verboso
   });
 
   socket.on('disconnect', () => {
-    console.log(`Client disconnesso: ${socket.id}`);
-    // Invia un messaggio agli altri client nella stanza
     socket.to(socket.room).emit('userDisconnected', { id: socket.id });
   });
 
@@ -240,32 +228,20 @@ io.on('connection', (socket) => {
     console.error(`Errore socket per client ${socket.id}:`, err);
   });
 
-  // Quando un nuovo utente si iscrive tramite referral
   socket.on('newEmail', async ({ email, suggestion, ref }) => {
     try {
-      // Salva nel DB la suggestion
       await Suggestion.create({ email, suggestion });
-
-      // Se c'è un referral, salvalo
       if (ref && ref !== email) {
-        // Evita auto-inviti
         const alreadyInvited = await Invite.findOne({ referrer: ref, referred: email });
         if (!alreadyInvited) {
           await Invite.create({ referrer: ref, referred: email });
         }
       }
-
-      // Aggiorna il counter e notifica tutti i client
       await updateCounterAndBroadcast();
-
-      // Invia l'email di ringraziamento
       await sendThankYouEmail(email, suggestion);
-
-      // Se c'è un referral, controlla se il referrer ha raggiunto 3 inviti
       if (ref && ref !== email) {
         const inviteCount = await Invite.countDocuments({ referrer: ref });
         if (inviteCount === 3) {
-          // Qui puoi inviare una mail di premio al referrer
           await sendRewardEmail(ref);
         }
       }
@@ -274,23 +250,24 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Invia il counter iniziale al client che si connette
   socket.on('getInitialCounter', async () => {
     await updateCounterAndBroadcast();
     socket.emit('updateCounter', emailCounter);
   });
 });
 
+
 io.engine.on("connection_error", (err) => {
   console.error("Socket.IO Engine Connection Error:");
-  // console.error("Richiesta:", err.req); // L'oggetto richiesta può essere grande
   console.error("Codice errore:", err.code);
   console.error("Messaggio:", err.message);
   console.error("Contesto:", err.context);
 });
 
+
 const compression = require('compression');
 app.use(compression());
+
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server in ascolto sulla porta ${PORT}`);

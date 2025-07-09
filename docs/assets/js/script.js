@@ -38,64 +38,40 @@ document.addEventListener("DOMContentLoaded", () => {
   const originalPlaceholder = "How could a truly smart calendar help you?";
   const mobilePlaceholder = "What would help you?";
 
-  // --- INIZIO LOGICA LOADER ---
   if (loaderOverlay && loaderLogoContainer && finalLogoSvg) {
     setTimeout(() => {
       loaderOverlay.classList.add("paths-animated");
     }, 100);
-
-    const loaderAnimationPathDuration = 800 + 300; // 1100ms
-    const loaderMinDisplayTime = 1800; // Tempo che il loader resta visibile dopo l'animazione dei path
-
-    const timeUntilFlight = Math.max(loaderAnimationPathDuration, loaderMinDisplayTime); // Es: 1800ms
-
-    setTimeout(() => { // Timeout per iniziare il "volo"
+    const loaderAnimationPathDuration = 1100;
+    const loaderMinDisplayTime = 1800;
+    const timeUntilFlight = Math.max(loaderAnimationPathDuration, loaderMinDisplayTime);
+    setTimeout(() => {
       const loaderRect = loaderLogoContainer.getBoundingClientRect();
       const targetRect = finalLogoSvg.getBoundingClientRect();
-
       const dx = targetRect.left + (targetRect.width / 2) - (loaderRect.left + (loaderRect.width / 2));
       const dy = targetRect.top + (targetRect.height / 2) - (loaderRect.top + (loaderRect.height / 2));
       const scaleX = targetRect.width / loaderRect.width;
       const scaleY = targetRect.height / loaderRect.height;
       const scale = Math.min(scaleX, scaleY);
-
       loaderLogoContainer.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      loaderLogoContainer.classList.add("flying"); // Durata transizione "flying" è 0.8s (800ms)
-
-      // Timeout per far apparire il logo finale e nascondere l'overlay
-      // Questo avviene alla fine dell'animazione di "volo"
+      loaderLogoContainer.classList.add("flying");
       setTimeout(() => {
         finalLogoSvg.classList.add("visible");
-        loaderOverlay.classList.add("hidden"); // Durata transizione "hidden" è 0.4s (400ms)
-
-        // --- PUNTO CHIAVE: FINE ANIMAZIONE LOADER ---
-        // Ora che l'overlay è nascosto e il logo finale è visibile,
-        // possiamo far partire il resto delle inizializzazioni della pagina.
-        
-        // Imposta lo step iniziale del form e il placeholder
+        loaderOverlay.classList.add("hidden");
         setInputPlaceholder();
         window.addEventListener('resize', setInputPlaceholder);
         setActiveStep(inputStep);
-        
-        // Inizializza il testo del contatore a 0
         counterElement.textContent = 0;
-        
-        // Richiedi il valore iniziale del contatore al server
-        // Questo triggererà l'animazione del contatore.
         socket.emit('getInitialCounter');
-
-      }, 800); // Corrisponde alla durata dell'animazione "flying"
-
+      }, 800);
     }, timeUntilFlight);
   } else {
-    // Fallback se il loader non esiste: inizializza subito la pagina
     setInputPlaceholder();
     window.addEventListener('resize', setInputPlaceholder);
     setActiveStep(inputStep);
     counterElement.textContent = 0;
     socket.emit('getInitialCounter');
   }
-  // --- FINE LOGICA LOADER ---
 
 
   function setInputPlaceholder() {
@@ -125,13 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
     counterElement.textContent = currentAnimatedValue;
     const animationDuration = 1500;
     let startTime = null;
-
     function animationStep(timestamp) {
       if (!startTime) startTime = timestamp;
       const progress = timestamp - startTime;
       const increment = Math.max(1, Math.floor((progress / animationDuration) * targetCount));
       const value = Math.min(targetCount, increment);
-
       if (currentAnimatedValue < value) {
         currentAnimatedValue = value;
         counterElement.textContent = currentAnimatedValue;
@@ -139,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
         currentAnimatedValue = targetCount;
         counterElement.textContent = currentAnimatedValue;
       }
-
       if (currentAnimatedValue < targetCount) {
         requestAnimationFrame(animationStep);
       } else {
@@ -173,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             setActiveStep(emailStep);
         }, 400);
-      }, 2500 + 400);
+      }, 2900);
     }
   });
 
@@ -187,11 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const emailInput = emailInputElement.value;
     if (emailInput.trim() !== "" && userSuggestion.trim() !== "") {
-      // --- MODIFICA QUI: INVIA ANCHE IL REF SE PRESENTE ---
       socket.emit('newEmail', { 
         email: emailInput, 
         suggestion: userSuggestion, 
-        ref: referrerFromUrl // aggiungi il referrer se presente
+        ref: referrerFromUrl
       });
       setActiveStep(null);
       setTimeout(() => {
